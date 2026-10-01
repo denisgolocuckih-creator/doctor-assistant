@@ -1,3 +1,3 @@
-git init
-git add .
-git commit -m "Первый прототип: справочник врача-терапевта"
+git add README.md
+git commit -m "Исправил README"
+git push
