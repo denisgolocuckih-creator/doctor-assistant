@@ -1,0 +1,3062 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Фармацевтический справочник</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>:root {
+  --bg-center: #f0f4f9;
+  --bg-edge: #c2cde0;
+  --surface-dark: #1e2336;
+  --surface-darker: #141826;
+  --surface-glass: rgba(255, 255, 255, 0.88);
+  --panel-inner: #ffffff;
+  --gemini-pill-bg: #dde3ea;
+  --gemini-hover: rgba(68, 71, 70, 0.08);
+  --card-bg: #323956;
+  --card-border: rgba(255, 255, 255, 0.18);
+  --text-title: #1f1f1f;
+  --text-muted: #444746;
+  --text-on-dark: #f8fafd;
+  --accent: #0b57d0;
+  --accent-soft: #d3e3fd;
+  --modal-outer: #919cb5;
+  --radius-main: 28px;
+  --radius-pill: 999px;
+  --shadow-soft: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-hover: 0 20px 44px rgba(15, 23, 42, 0.24);
+}
+
+/* Темная тема */
+body.dark-mode {
+  --bg-center: #1a1e2e;
+  --bg-edge: #0d1017;
+  --surface-dark: #252b42;
+  --surface-darker: #161a29;
+  --surface-glass: rgba(30, 35, 54, 0.92);
+  --panel-inner: #262c44;
+  --gemini-pill-bg: #323954;
+  --gemini-hover: rgba(255, 255, 255, 0.08);
+  --card-bg: #22273d;
+  --text-title: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent: #60a5fa;
+  --accent-soft: rgba(96, 165, 250, 0.2);
+  --modal-outer: #2d3552;
+}
+
+/* Режим для слабовидящих */
+body.a11y-mode {
+  --bg-center: #ffffff;
+  --bg-edge: #e5e5e5;
+  --surface-dark: #000000;
+  --surface-darker: #222222;
+  --surface-glass: #ffffff;
+  --panel-inner: #ffffff;
+  --gemini-pill-bg: #e0e0e0;
+  --card-bg: #111111;
+  --card-border: #000000;
+  --text-title: #000000;
+  --text-muted: #111111;
+  --text-on-dark: #ffff00;
+  --accent: #000000;
+  --accent-soft: #ffeb3b;
+  --modal-outer: #222222;
+  font-size: 112%;
+  letter-spacing: 0.4px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  font-family: 'Google Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at 50% 35%, var(--bg-center) 0%, var(--bg-edge) 100%);
+  color: var(--text-title);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+#bgParticles {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app-wrapper {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: filter 0.3s ease;
+}
+
+#app-wrapper.blurred {
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+/* ================= ВЕРХНЕЕ МЕНЮ НА ВЕСЬ ВЕРХ БЕЗ БЛИКА И БЕЗ РАМКИ ================= */
+.top-nav-zone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 74px;
+  z-index: 150;
+  pointer-events: none;
+}
+
+.menu-trigger-btn {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  width: 52px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgba(120, 125, 140, 0.35);
+  background: var(--panel-inner);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 155;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.menu-trigger-btn:hover {
+  transform: scale(1.04);
+}
+
+.menu-trigger-btn span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text-title);
+  border-radius: 2px;
+}
+
+.top-hover-menu {
+  position: fixed;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  height: 56px;
+  padding: 0 24px 0 80px;
+  background: var(--surface-dark);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-12px);
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+  pointer-events: auto;
+  z-index: 152;
+}
+
+.top-nav-zone:hover .top-hover-menu,
+.top-hover-menu:hover,
+.top-hover-menu.force-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-menu-status {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  padding-right: 6px;
+}
+
+/* Кнопки меню: БЕЗ блика и БЕЗ окантовки */
+.nav-link {
+  height: 40px;
+  padding: 0 22px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-on-dark);
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* ================= КНОПКИ, КРЕСТИКИ И ВСПЛЫВАЮЩИЙ ВЫБОР ВИДА ================= */
+.elongated-oval-btn {
+  height: 40px;
+  padding: 0 24px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.elongated-oval-btn.accent-fill {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.elongated-oval-btn.full-width {
+  width: 100%;
+  height: 44px;
+}
+
+.elongated-oval-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+/* Красная кнопка Удалить */
+.danger-oval-btn {
+  height: 40px;
+  padding: 0 26px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.28);
+}
+
+.danger-oval-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.oval-subtle-btn {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.oval-subtle-btn:hover {
+  filter: brightness(0.95);
+}
+
+/* Круглый аккуратный крестик закрытия / возврата */
+.circle-close-btn,
+.window-corner-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.circle-close-btn:hover,
+.window-corner-close:hover {
+  background: #dc2626;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.window-corner-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+}
+
+/* Компактная иконка вида отображения с всплывающим окошком при наведении */
+.view-hover-Menu {
+  position: relative;
+  display: inline-block;
+}
+
+.view-icon-trigger {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.view-hover-Menu:hover .view-icon-trigger {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.view-popup-box {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  min-width: 150px;
+  background: var(--panel-inner);
+  border-radius: 18px;
+  padding: 6px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.96);
+  transition: all 0.2s ease;
+  z-index: 95;
+}
+
+.view-hover-Menu:hover .view-popup-box,
+.view-popup-box:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.view-popup-opt {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-title);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.view-popup-opt:hover {
+  background: var(--gemini-hover);
+}
+
+.view-popup-opt.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ================= ГЛАВНЫЙ ЭКРАН И АВТОДОПОЛНЕНИЕ БОЛЕЗНЕЙ ================= */
+.page-section {
+  display: none;
+}
+
+.page-section.active {
+  display: block;
+}
+
+.centered-page.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 74px 20px 40px 20px;
+}
+
+.hero-search-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 88vh;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.hero-search-section.compact {
+  min-height: auto;
+  padding-top: 76px;
+  padding-bottom: 10px;
+}
+
+.hero-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 5px 16px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 14px;
+}
+
+.app-title {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-title);
+  margin-bottom: 10px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.hero-subtitle {
+  font-size: 15.5px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.hero-search-section.compact .hero-kicker,
+.hero-search-section.compact .app-title,
+.hero-search-section.compact .hero-subtitle {
+  opacity: 0;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.search-wrapper {
+  position: relative;
+  width: min(660px, 92vw);
+}
+
+.search-box {
+  width: 100%;
+  height: 52px;
+  background: var(--panel-inner);
+  border: 1px solid rgba(68, 71, 70, 0.22);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  padding: 6px 6px 6px 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  transition: all 0.25s ease;
+}
+
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 12px 30px rgba(11, 87, 208, 0.14), 0 0 0 3px var(--accent-soft);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 15.5px;
+  color: var(--text-title);
+  outline: none;
+  padding-right: 10px;
+}
+
+.search-input::placeholder {
+  color: #747775;
+}
+
+/* Компактная кнопка Фильтр */
+.filter-btn {
+  height: 38px;
+  min-width: 104px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-title);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Прямоугольник совпадений болезней под строкой поиска */
+.disease-suggestions-box {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: var(--panel-inner);
+  border-radius: 22px;
+  padding: 8px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  max-height: 270px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: all 0.2s ease;
+  z-index: 92;
+  text-align: left;
+}
+
+.disease-suggestions-box.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.disease-suggest-item {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-title);
+  font-size: 14.5px;
+  font-weight: 500;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.16s ease;
+}
+
+.disease-suggest-item:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.disease-suggest-count {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Компактное выпадающее меню фильтра */
+.filter-dropdown {
+  position: absolute;
+  top: 58px;
+  right: 0;
+  width: 205px;
+  background: var(--panel-inner);
+  border-radius: 18px;
+  padding: 6px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.97);
+  transition: all 0.2s ease;
+  z-index: 94;
+}
+
+.filter-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.filter-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text-title);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.filter-option:hover {
+  background: var(--gemini-hover);
+}
+
+.filter-option.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.search-divider {
+  width: min(300px, 60vw);
+  height: 1px;
+  background: rgba(68, 71, 70, 0.2);
+  margin-top: 14px;
+  opacity: 0;
+  transform: scaleX(0);
+  transition: 0.3s;
+}
+
+.hero-search-section.compact .search-divider {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* ================= КАТАЛОГ ПРЕПАРАТОВ ================= */
+.results-container {
+  width: min(1160px, 92vw);
+  margin: 0 auto 70px auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px);
+  transition: 0.35s ease;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.results-container.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  max-height: 35000px;
+  overflow: visible;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0 20px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.results-header-left,
+.results-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.results-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.cards-grid.list-view {
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.drug-card {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: var(--radius-main);
+  min-height: 285px;
+  padding: 22px;
+  color: var(--text-on-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.26s ease, box-shadow 0.26s ease, border-radius 0.25s ease;
+}
+
+.drug-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(340px circle at var(--mouse-x, 50%) var(--mouse-y, -20%), rgba(255, 255, 255, 0.22), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+
+.drug-card.glare-active:hover::before {
+  opacity: 1;
+}
+
+.drug-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.cards-grid.list-view .drug-card {
+  min-height: 124px;
+  flex-direction: row;
+  text-align: left;
+  padding: 18px 26px;
+  gap: 22px;
+}
+
+.card-thumb {
+  width: 110px;
+  height: 84px;
+  border-radius: calc(var(--radius-main) - 10px);
+  background: rgba(255, 255, 255, 0.13);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  flex-shrink: 0;
+  transition: border-radius 0.25s ease;
+}
+
+.card-thumb svg {
+  width: 100%;
+  height: 100%;
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-category {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.76;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.card-inn {
+  font-size: 12.5px;
+  opacity: 0.74;
+}
+
+.card-diseases {
+  font-size: 12.5px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 5px 12px;
+  border-radius: 14px;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+.card-preset-btn {
+  height: 36px;
+  margin-top: 10px;
+  padding: 0 20px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+  flex-shrink: 0;
+}
+
+.cards-grid.list-view .card-preset-btn {
+  margin-top: 0;
+}
+
+.card-preset-btn:hover {
+  background: #ffffff;
+  color: #1f1f1f;
+}
+
+/* ================= НАСТРОЙКИ С БОКОВЫМ ОКОШКОМ "НАСТРОЙКИ" СЛЕВА ================= */
+.settings-outer-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: min(1140px, 95vw);
+}
+
+.settings-side-badge {
+  background: var(--surface-dark);
+  color: var(--text-on-dark);
+  padding: 18px 22px;
+  border-radius: calc(var(--radius-main) - 6px);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  box-shadow: var(--shadow-soft);
+  flex-shrink: 0;
+  margin-top: 24px;
+  transition: border-radius 0.25s ease;
+}
+
+.settings-shell {
+  position: relative;
+  flex: 1;
+  min-height: 510px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(18px);
+  border-radius: var(--radius-main);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: grid;
+  grid-template-columns: 235px 1fr;
+  overflow: hidden;
+  transition: border-radius 0.25s ease;
+}
+
+.settings-sidebar {
+  background: rgba(140, 150, 175, 0.14);
+  padding: 22px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-cat-btn {
+  height: 42px;
+  text-align: left;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-cat-btn:hover {
+  background: var(--gemini-hover);
+  color: var(--text-title);
+}
+
+.settings-cat-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.settings-content {
+  padding: 32px 64px 32px 36px;
+}
+
+.settings-pane {
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.settings-pane.active {
+  display: flex;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(120, 125, 140, 0.14);
+  gap: 16px;
+}
+
+.setting-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-title);
+}
+
+.theme-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.theme-pill {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.theme-pill:hover,
+.theme-pill.active-lang,
+.theme-pill.active-theme,
+.theme-pill.active-mode {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+#rgbWheel {
+  cursor: crosshair;
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 0 0 4px #fff;
+}
+
+.modern-select {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-title);
+  outline: none;
+  cursor: pointer;
+}
+
+.modern-range {
+  width: 180px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #c4c7c5;
+  transition: 0.25s;
+  border-radius: var(--radius-pill);
+}
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.25s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent);
+}
+
+input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+/* ================= ПРЕСЕТЫ И FAQ ================= */
+.presets-shell,
+.faq-shell {
+  width: min(1100px, 92vw);
+  background: var(--surface-glass);
+  backdrop-filter: blur(18px);
+  border-radius: var(--radius-main);
+  padding: 30px;
+  box-shadow: var(--shadow-soft);
+  transition: border-radius 0.25s ease;
+}
+
+.presets-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(120, 125, 140, 0.15);
+}
+
+.section-heading {
+  font-size: 23px;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.presets-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.presets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.presets-grid.list-mode {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.presets-grid.compact-mode {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.preset-folder-card {
+  position: relative;
+  background: var(--card-bg);
+  color: var(--text-on-dark);
+  border-radius: var(--radius-main);
+  padding: 24px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 150px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.24s ease, box-shadow 0.24s ease, border-radius 0.25s ease;
+}
+
+.presets-grid.list-mode .preset-folder-card {
+  min-height: 78px;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 24px;
+}
+
+.presets-grid.compact-mode .preset-folder-card {
+  min-height: 110px;
+  padding: 16px;
+}
+
+.preset-folder-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.preset-folder-title {
+  font-size: 18.5px;
+  font-weight: 600;
+  padding-right: 28px;
+}
+
+.preset-folder-count {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 13px;
+  font-weight: 500;
+  width: fit-content;
+  margin-top: 10px;
+}
+
+.presets-grid.list-mode .preset-folder-count {
+  margin-top: 0;
+}
+
+.preset-delete-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.16);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.preset-delete-btn:hover {
+  background: #dc2626;
+}
+
+.preset-drugs-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.preset-drugs-list.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.prescription-item {
+  background: var(--panel-inner);
+  border-radius: calc(var(--radius-main) - 6px);
+  padding: 18px 22px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-radius 0.25s ease;
+}
+
+.prescription-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.dosage-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 10px;
+}
+
+.field-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-box label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.oval-input {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(120, 125, 140, 0.25);
+  background: var(--bg-center);
+  font-size: 13.5px;
+  color: var(--text-title);
+  outline: none;
+}
+
+.preset-bottom-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(120, 125, 140, 0.15);
+}
+
+/* ================= МОДАЛЬНЫЕ ОКНА И НИЖНИЙ БЛОК АНАЛОГОВ ================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 18, 35, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.26s ease;
+  padding: 20px;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.detail-modal-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: min(880px, 95vw);
+}
+
+.detail-modal-wrapper {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 420px;
+}
+
+/* Круглый крестик сверху справа над модалкой */
+.modal-close-top {
+  position: absolute;
+  top: -46px;
+  right: 6px;
+  width: 38px;
+  height: 38px;
+  background: var(--panel-inner);
+  border: none;
+  color: var(--text-title);
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: 0.2s ease;
+}
+
+.modal-close-top:hover {
+  background: #dc2626;
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.detail-left-panel,
+.detail-right-panel {
+  flex: 1;
+  background: var(--modal-outer);
+  border-radius: var(--radius-main);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.24);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  transition: border-radius 0.25s ease;
+}
+
+.detail-white-box {
+  background: var(--panel-inner);
+  border-radius: calc(var(--radius-main) - 8px);
+  flex: 1;
+  padding: 22px;
+  color: var(--text-title);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-radius 0.25s ease;
+}
+
+.detail-badge {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  width: fit-content;
+}
+
+.detail-section {
+  font-size: 13.5px;
+  line-height: 1.48;
+  color: var(--text-title);
+}
+
+.detail-section strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.detail-right-panel {
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.detail-photo-frame {
+  width: 88%;
+  height: 215px;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: calc(var(--radius-main) - 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  transition: border-radius 0.25s ease;
+}
+
+.detail-photo-frame svg {
+  width: 100%;
+  height: 100%;
+}
+
+.detail-right-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Отдельный блок с аналогами НИЖЕ окна карточки (повторяет форму и меняет скругление от настроек) */
+.analogs-external-oval {
+  width: 100%;
+  color: var(--text-title);
+  border-radius: var(--radius-main);
+  border: 14px solid transparent;
+  background:
+    linear-gradient(var(--panel-inner), var(--panel-inner)) padding-box,
+    linear-gradient(var(--modal-outer), var(--modal-outer)) border-box;
+  padding: 18px 24px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 20px 44px rgba(0, 0, 0, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  animation: fadeInOval 0.25s ease forwards;
+  transition: border-radius 0.25s ease;
+}
+
+@keyframes fadeInOval {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.analog-chip {
+  display: inline-block;
+  margin: 2px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.18s;
+}
+
+.analog-chip:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Модалки выбора пресета и подтверждения удаления */
+.picker-modal-card {
+  width: min(430px, 92vw);
+  background: var(--panel-inner);
+  color: var(--text-title);
+  border-radius: var(--radius-main);
+  padding: 24px;
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-radius 0.25s ease;
+}
+
+.picker-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.picker-presets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 210px;
+  overflow-y: auto;
+}
+
+.picker-preset-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--gemini-pill-bg);
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.picker-preset-row:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.create-preset-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.create-preset-form .oval-input {
+  flex: 1;
+}
+
+.confirm-text {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-card {
+  background: var(--panel-inner);
+  padding: 18px 22px;
+  border-radius: calc(var(--radius-main) - 8px);
+  transition: border-radius 0.25s ease;
+}
+
+.faq-card h3 {
+  margin-bottom: 6px;
+  font-size: 16.5px;
+}
+
+.version-watermark {
+  position: fixed;
+  bottom: 14px;
+  right: 22px;
+  font-size: 13px;
+  color: rgba(100, 105, 120, 0.45);
+  pointer-events: none;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1f1f1f;
+  color: #fff;
+  padding: 11px 24px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 300;
+  opacity: 0;
+  transition: 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+#print-area {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-area,
+  #print-area * {
+    visibility: visible;
+  }
+  #print-area {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 24px;
+    background: #fff;
+    color: #000;
+  }
+}
+
+@media (max-width: 860px) {
+  .cards-grid,
+  .presets-grid,
+  .presets-grid.compact-mode,
+  .preset-drugs-list.grid-2,
+  .settings-shell {
+    grid-template-columns: 1fr;
+  }
+  .settings-outer-wrap,
+  .detail-modal-wrapper {
+    flex-direction: column;
+  }
+}</style>
+</head>
+<body>
+
+  <!-- Фоновая анимация летающих шариков -->
+  <canvas id="bgParticles"></canvas>
+
+  <!-- Полноширинное верхнее меню при наведении на кнопку слева -->
+  <div class="top-nav-zone" id="topNavZone">
+    <button class="menu-trigger-btn" id="menuTriggerBtn" onclick="toggleMenuClick()" aria-label="Меню">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <header class="top-hover-menu" id="topHoverMenu">
+      <nav class="top-nav-links">
+        <button class="nav-link" data-page="home" onclick="switchPage('home')" data-i18n="nav_home">Главная</button>
+        <button class="nav-link" data-page="settings" onclick="switchPage('settings')" data-i18n="nav_settings">Настройки</button>
+        <button class="nav-link" data-page="presets" onclick="switchPage('presets')" data-i18n="nav_presets">Пресеты</button>
+        <button class="nav-link" data-page="faq" onclick="switchPage('faq')" data-i18n="nav_faq">FAQ</button>
+      </nav>
+      <div class="top-menu-status" data-i18n="top_status">Реестр Минздрава РФ</div>
+    </header>
+  </div>
+
+  <!-- Основной контейнер интерфейса -->
+  <div id="app-wrapper">
+
+    <!-- СТРАНИЦА 1: ГЛАВНАЯ И ПОИСК СТРОГО ПО БОЛЕЗНЯМ -->
+    <main id="page-home" class="page-section active">
+      <section class="hero-search-section" id="heroSection">
+        <div class="hero-kicker" data-i18n="hero_kicker">
+          КЛИНИЧЕСКИЙ СПРАВОЧНИК ТЕРАПЕВТА
+        </div>
+
+        <h1 class="app-title" onclick="resetToHero()" data-i18n="app_title">
+          ФАРМАЦЕВТИЧЕСКИЙ СПРАВОЧНИК
+        </h1>
+
+        <p class="hero-subtitle" data-i18n="hero_subtitle">
+          Введите заболевание для подбора терапии
+        </p>
+
+        <div class="search-wrapper" id="searchWrapper">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Введите болезнь (например: Изжога, Грипп, Гипертония)..."
+              data-i18n-placeholder="search_placeholder"
+              autocomplete="off"
+            />
+            <button class="filter-btn" id="filterBtn" type="button" data-i18n="filter_btn">Фильтр</button>
+          </div>
+
+          <!-- Прямоугольник совпадений по болезням при вводе текста -->
+          <div class="disease-suggestions-box" id="diseaseSuggestionsBox"></div>
+
+          <!-- Компактный выпадающий фильтр по группам заболеваний -->
+          <div class="filter-dropdown" id="filterDropdown"></div>
+        </div>
+
+        <div class="search-divider"></div>
+      </section>
+
+      <!-- Блок результатов поиска лекарств по выбранной болезни -->
+      <section class="results-container" id="resultsContainer">
+        <div class="results-header">
+          <div class="results-header-left">
+            <span class="results-title" id="resultsLabel">Лекарства по заболеванию:</span>
+            <button class="oval-subtle-btn" id="resetAnalogBtn" style="display:none;" onclick="clearAnalogFilter()">
+              Сбросить фильтр аналогов
+            </button>
+          </div>
+
+          <div class="results-header-right">
+            <!-- Компактная иконка выбора вида с всплывающим окошком при наведении -->
+            <div class="view-hover-Menu">
+              <button class="view-icon-trigger" id="catalogViewIcon" title="Вид отображения">⊞</button>
+              <div class="view-popup-box">
+                <button class="view-popup-opt active" id="grid3Btn" onclick="setCatalogView('grid', '⊞')">
+                  <span>⊞</span> 3 в строку
+                </button>
+                <button class="view-popup-opt" id="grid1Btn" onclick="setCatalogView('list', '☰')">
+                  <span>☰</span> 1 в строку
+                </button>
+              </div>
+            </div>
+
+            <!-- Крестик закрытия результатов поиска -->
+            <button class="circle-close-btn" onclick="resetToHero()" title="Закрыть каталог">&times;</button>
+          </div>
+        </div>
+
+        <div class="cards-grid" id="cardsGrid"></div>
+      </section>
+    </main>
+
+    <!-- СТРАНИЦА 2: НАСТРОЙКИ (По центру + окошко "НАСТРОЙКИ" слева + крестик) -->
+    <section id="page-settings" class="page-section centered-page">
+      <div class="settings-outer-wrap">
+        <!-- Отдельное боковое окошко "НАСТРОЙКИ" у левого края -->
+        <div class="settings-side-badge" data-i18n="settings_badge">НАСТРОЙКИ</div>
+
+        <div class="settings-shell">
+          <button class="window-corner-close" onclick="switchPage('home')" title="Выйти на главную">&times;</button>
+
+          <aside class="settings-sidebar">
+            <button class="settings-cat-btn active" data-tab="appearance" onclick="switchSettingsTab('appearance')" data-i18n="set_cat_theme">Палитра и тема</button>
+            <button class="settings-cat-btn" data-tab="interface" onclick="switchSettingsTab('interface')" data-i18n="set_cat_ui">Интерфейс и фон</button>
+            <button class="settings-cat-btn" data-tab="language" onclick="switchSettingsTab('language')" data-i18n="set_cat_lang">Язык</button>
+            <button class="settings-cat-btn" data-tab="catalog" onclick="switchSettingsTab('catalog')" data-i18n="set_cat_catalog">Каталог и поиск</button>
+            <button class="settings-cat-btn" data-tab="printing" onclick="switchSettingsTab('printing')" data-i18n="set_cat_print">Печать</button>
+          </aside>
+
+          <div class="settings-content">
+            <!-- Вкладка 1: Палитра и тема -->
+            <div class="settings-pane active" id="tab-appearance">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_display_mode">Режим темы</span>
+                <div class="theme-pills">
+                  <button class="theme-pill active-mode" onclick="setDisplayMode('light', this)" data-i18n="mode_light">Светлая</button>
+                  <button class="theme-pill" onclick="setDisplayMode('dark', this)" data-i18n="mode_dark">Темная</button>
+                  <button class="theme-pill" onclick="setDisplayMode('a11y', this)" data-i18n="mode_a11y">Для слабовидящих</button>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_preset_theme">Оттенок оформления</span>
+                <div class="theme-pills">
+                  <button class="theme-pill active-theme" onclick="applyPresetTheme('gemini', this)" data-i18n="theme_classic">Gemini</button>
+                  <button class="theme-pill" onclick="applyPresetTheme('medical', this)" data-i18n="theme_medical">Синяя</button>
+                  <button class="theme-pill" onclick="applyPresetTheme('emerald', this)" data-i18n="theme_emerald">Шалфей</button>
+                  <button class="theme-pill" onclick="applyPresetTheme('warm', this)" data-i18n="theme_warm">Кварц</button>
+                  <button class="theme-pill" onclick="applyPresetTheme('graphite', this)" data-i18n="theme_graphite">Графит</button>
+                </div>
+              </div>
+
+              <div class="setting-row wheel-row">
+                <span class="setting-label" data-i18n="set_custom_wheel">Пользовательский спектр RGB</span>
+                <div class="wheel-box">
+                  <canvas id="rgbWheel" width="180" height="180"></canvas>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_contrast">Насыщенность карточек</span>
+                <input type="range" min="20" max="54" value="32" class="modern-range" oninput="updateCardContrast(this.value)" />
+              </div>
+            </div>
+
+            <!-- Вкладка 2: Интерфейс и фон -->
+            <div class="settings-pane" id="tab-interface">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_particles">Летающие шарики на фоне</span>
+                <label class="switch">
+                  <input type="checkbox" id="toggleParticles" checked onchange="toggleBackgroundParticles(this.checked)" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_particles_count">Количество шариков на фоне</span>
+                <input type="range" min="6" max="45" value="24" class="modern-range" oninput="updateParticlesCount(this.value)" />
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_radius">Скругление элементов</span>
+                <select class="modern-select" onchange="updateRoundness(this.value)">
+                  <option value="20px">Умеренное</option>
+                  <option value="28px" selected>Округлое</option>
+                  <option value="38px">Максимальное</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_glare">Блики на карточках препаратов</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="toggleGlareSetting(this.checked)" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_blur">Размытие заднего фона окон</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="appConfig.blur = this.checked" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_font_scale">Масштаб шрифта</span>
+                <input type="range" min="90" max="120" value="100" class="modern-range" oninput="document.documentElement.style.fontSize = this.value + '%'" />
+              </div>
+            </div>
+
+            <!-- Вкладка 3: Язык -->
+            <div class="settings-pane" id="tab-language">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_ui_lang">Язык интерфейса</span>
+                <div class="theme-pills">
+                  <button class="theme-pill active-lang" data-lang="ru" onclick="setLanguage('ru')">Русский</button>
+                  <button class="theme-pill" data-lang="en" onclick="setLanguage('en')">English</button>
+                  <button class="theme-pill" data-lang="de" onclick="setLanguage('de')">Deutsch</button>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_latin_inn">Показывать действующее вещество</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="appConfig.showInn = this.checked; renderCards();" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Вкладка 4: Каталог и поиск -->
+            <div class="settings-pane" id="tab-catalog">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_default_grid">Отображение карточек</span>
+                <select class="modern-select" onchange="setCatalogView(this.value, this.value === 'grid' ? '⊞' : '☰')">
+                  <option value="grid">3 в строку</option>
+                  <option value="list">1 в строку</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_sort">Сортировка списка</span>
+                <select class="modern-select" id="sortSelect" onchange="renderCards()">
+                  <option value="id">По реестру Минздрава</option>
+                  <option value="alpha">По алфавиту</option>
+                  <option value="category">По заболеванию</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Вкладка 5: Печать -->
+            <div class="settings-pane" id="tab-printing">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_paper">Формат листа</span>
+                <select class="modern-select" onchange="appConfig.paperSize = this.value">
+                  <option value="A4">A4</option>
+                  <option value="A5">A5</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_rx_prefix">Индексы Rp. / S.</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="appConfig.useRxPrefix = this.checked" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_print_border">Печатать рамку бланка</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="appConfig.printBorder = this.checked" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- СТРАНИЦА 3: ПРЕСЕТЫ -->
+    <section id="page-presets" class="page-section centered-page">
+      <div class="presets-shell">
+
+        <!-- Главный экран пресетов -->
+        <div id="presetsOverview">
+          <div class="presets-top-bar">
+            <h2 class="section-heading" data-i18n="nav_presets">Пресеты</h2>
+
+            <div class="presets-controls-right">
+              <button class="elongated-oval-btn accent-fill" onclick="openCreatePresetModal()" data-i18n="btn_create_preset">
+                Добавить пресет
+              </button>
+
+              <!-- Иконка выбора вида отображения пресетов при наведении -->
+              <div class="view-hover-Menu">
+                <button class="view-icon-trigger" id="presetsViewIcon" title="Вид отображения">⊞</button>
+                <div class="view-popup-box">
+                  <button class="view-popup-opt active" id="presetViewGridBtn" onclick="setPresetsViewMode('grid', '⊞')">
+                    <span>⊞</span> Плитка
+                  </button>
+                  <button class="view-popup-opt" id="presetViewListBtn" onclick="setPresetsViewMode('list', '☰')">
+                    <span>☰</span> Список
+                  </button>
+                  <button class="view-popup-opt" id="presetViewCompactBtn" onclick="setPresetsViewMode('compact', '▤')">
+                    <span>▤</span> Компактно
+                  </button>
+                </div>
+              </div>
+
+              <button class="circle-close-btn" onclick="switchPage('home')" title="Выйти на главную">&times;</button>
+            </div>
+          </div>
+
+          <div id="presetsGridContainer" class="presets-grid"></div>
+        </div>
+
+        <!-- Внутри открытого пресета -->
+        <div id="presetDetailView" style="display:none;">
+          <div class="presets-top-bar">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <!-- Крестик вместо кнопки "Назад" -->
+              <button class="circle-close-btn" onclick="closePresetDetail()" title="Закрыть пресет">&times;</button>
+              <h2 class="section-heading" id="openedPresetTitle">Пресет</h2>
+            </div>
+
+            <div class="presets-controls-right">
+              <!-- Иконка выбора вида внутри пресета при наведении -->
+              <div class="view-hover-Menu">
+                <button class="view-icon-trigger" id="innerPresetViewIcon" title="Вид отображения">☰</button>
+                <div class="view-popup-box">
+                  <button class="view-popup-opt active" id="innerView1Btn" onclick="setInnerPresetView('list', '☰')">
+                    <span>☰</span> 1 в строку
+                  </button>
+                  <button class="view-popup-opt" id="innerView2Btn" onclick="setInnerPresetView('grid', '⊞')">
+                    <span>⊞</span> 2 в строку
+                  </button>
+                </div>
+              </div>
+
+              <button class="elongated-oval-btn accent-fill" onclick="printActivePreset()" data-i18n="btn_print">
+                Печать рецепта
+              </button>
+            </div>
+          </div>
+
+          <div id="presetDrugsContainer" class="preset-drugs-list"></div>
+
+          <!-- Нижняя панель внутри пресета с красной кнопкой УДАЛИТЬ справа -->
+          <div class="preset-bottom-bar">
+            <button class="danger-oval-btn" onclick="askDeletePreset(openedPresetId)">
+              Удалить
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- СТРАНИЦА 4: FAQ -->
+    <section id="page-faq" class="page-section centered-page">
+      <div class="faq-shell" style="position:relative;">
+        <button class="window-corner-close" onclick="switchPage('home')" title="Выйти на главную">&times;</button>
+        <h2 class="section-heading" style="margin-bottom: 22px;">FAQ</h2>
+        <div class="faq-list">
+          <div class="faq-card">
+            <h3>Поиск лекарств по заболеванию</h3>
+            <p>Начните вводить название болезни в строку поиска (например: «И» — Изжога, «Г» — Гастрит, Гипертония, Грипп). В появившемся ниже прямоугольнике нажмите на нужное заболевание, чтобы вывести все препараты для его лечения.</p>
+          </div>
+          <div class="faq-card">
+            <h3>Подбор аналогов</h3>
+            <p>Откройте карточку препарата и нажмите «Найти аналоги» — ниже основного окна появится отдельный овал со списком прямых аналогов по действующему веществу и группе.</p>
+          </div>
+          <div class="faq-card">
+            <h3>Пресеты, удаление и печать</h3>
+            <p>Добавляйте препараты в пресеты, настраивайте дозировки и выводите рецепт на печать. Удалить любой пресет можно красной кнопкой «Удалить» внутри пресета с подтверждением действия.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="version-watermark">#Версия 0.42 Release</div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ПОЛНАЯ КАРТОЧКА ПРЕПАРАТА + ОТДЕЛЬНЫЙ ОВАЛ АНАЛОГОВ НИЖЕ ОКНА -->
+  <div class="modal-overlay" id="detailModal" onclick="handleBackdropClose(event, 'detailModal')">
+    <div class="detail-modal-stack">
+      <div class="detail-modal-wrapper">
+        <!-- Просто крестик вместо слова "ЗАКРЫТЬ" -->
+        <button class="modal-close-top" onclick="closeModal('detailModal')" title="Закрыть">&times;</button>
+
+        <div class="detail-left-panel">
+          <div class="detail-white-box" id="modalDescriptionBox"></div>
+        </div>
+
+        <div class="detail-right-panel">
+          <div class="detail-photo-frame" id="modalPhotoBox"></div>
+          <div class="detail-right-actions" id="modalActionBox"></div>
+        </div>
+      </div>
+
+      <!-- Отдельный овал аналогов НИЖЕ основного окна карточки -->
+      <div class="analogs-external-oval" id="modalAnalogsDrawer" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ВЫБОР ИЛИ СОЗДАНИЕ ПРЕСЕТА -->
+  <div class="modal-overlay" id="presetPickerModal" onclick="handleBackdropClose(event, 'presetPickerModal')">
+    <div class="picker-modal-card">
+      <div class="picker-modal-header">
+        <h3 id="pickerModalTitle" data-i18n="modal_select_preset">Выбор пресета</h3>
+        <button class="circle-close-btn" onclick="closeModal('presetPickerModal')">&times;</button>
+      </div>
+
+      <div id="existingPresetsList" class="picker-presets-list"></div>
+
+      <div class="create-preset-zone">
+        <button class="elongated-oval-btn full-width" id="showCreateInputBtn" onclick="toggleCreatePresetInput(true)" data-i18n="btn_create_preset">
+          Добавить пресет
+        </button>
+
+        <div id="createPresetForm" class="create-preset-form" style="display:none;">
+          <input
+            type="text"
+            id="newPresetNameInput"
+            class="oval-input"
+            placeholder="Название пресета..."
+            autocomplete="off"
+          />
+          <button class="elongated-oval-btn accent-fill" onclick="confirmCreatePreset()" data-i18n="btn_save">
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ: "Вы уверены, что хотите удалить пресет?" -->
+  <div class="modal-overlay" id="confirmDeleteModal" onclick="handleBackdropClose(event, 'confirmDeleteModal')">
+    <div class="picker-modal-card confirm-card">
+      <div class="picker-modal-header">
+        <h3>Удаление пресета</h3>
+        <button class="circle-close-btn" onclick="closeModal('confirmDeleteModal')">&times;</button>
+      </div>
+      <p class="confirm-text">Вы уверены, что хотите удалить пресет?</p>
+      <div class="confirm-actions">
+        <button class="oval-subtle-btn" onclick="closeModal('confirmDeleteModal')">Отмена</button>
+        <button class="danger-oval-btn" onclick="confirmDeletePresetAction()">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div id="print-area"></div>
+
+  <script>/* =========================================================================
+   СЛОВАРИ ЛОКАЛИЗАЦИИ ИНТЕРФЕЙСА (RU / EN / DE)
+========================================================================= */
+const I18N = {
+  ru: {
+    top_status: "Реестр Минздрава РФ",
+    hero_kicker: "КЛИНИЧЕСКИЙ СПРАВОЧНИК ТЕРАПЕВТА",
+    app_title: "ФАРМАЦЕВТИЧЕСКИЙ СПРАВОЧНИК",
+    hero_subtitle: "Введите заболевание, симптом или название препарата для подбора терапии",
+    nav_home: "Главная",
+    nav_settings: "Настройки",
+    nav_presets: "Пресеты",
+    nav_faq: "FAQ",
+    search_placeholder: "Введите болезнь или симптом...",
+    filter_btn: "Фильтр",
+    view_3: "3 в строку",
+    view_1: "1 в строку",
+    view_2: "2 в строку",
+    view_grid: "Плитка",
+    view_list: "Список",
+    view_compact: "Компактно",
+    btn_add_to_preset: "Добавить в пресет",
+    btn_create_preset: "Добавить пресет",
+    btn_find_analogs: "Найти аналоги",
+    btn_back: "Назад",
+    btn_print: "Печать рецепта",
+    btn_close: "ЗАКРЫТЬ",
+    btn_save: "Сохранить",
+    modal_select_preset: "Выбор пресета",
+    set_cat_theme: "Палитра и тема",
+    set_cat_ui: "Интерфейс и фон",
+    set_cat_lang: "Язык",
+    set_cat_catalog: "Каталог и поиск",
+    set_cat_print: "Печать",
+    set_preset_theme: "Базовая цветовая схема",
+    set_custom_wheel: "Пользовательский спектр RGB",
+    set_contrast: "Насыщенность карточек",
+    set_particles: "Летающие шарики на фоне",
+    set_particles_count: "Количество шариков на фоне",
+    set_radius: "Скругление элементов",
+    set_glare: "Скользящие блики при наведении",
+    set_blur: "Размытие заднего фона окон",
+    set_font_scale: "Масштаб шрифта",
+    set_ui_lang: "Язык интерфейса",
+    set_latin_inn: "Показывать действующее вещество",
+    set_default_grid: "Отображение карточек",
+    set_sort: "Сортировка списка",
+    set_instant_search: "Мгновенный фильтр при вводе",
+    set_paper: "Формат листа",
+    set_rx_prefix: "Индексы Rp. / S.",
+    set_print_border: "Печатать рамку бланка",
+    theme_classic: "Gemini",
+    theme_medical: "Синяя",
+    theme_emerald: "Шалфей",
+    theme_warm: "Кварц",
+    theme_graphite: "Графит",
+    results_prefix: "Найдено препаратов"
+  },
+  en: {
+    top_status: "Clinical Registry",
+    hero_kicker: "PHYSICIAN CLINICAL DIRECTORY",
+    app_title: "PHARMACEUTICAL DIRECTORY",
+    hero_subtitle: "Enter a disease, symptom, or medication name to select therapy",
+    nav_home: "Home",
+    nav_settings: "Settings",
+    nav_presets: "Presets",
+    nav_faq: "FAQ",
+    search_placeholder: "Enter disease or symptom...",
+    filter_btn: "Filter",
+    view_3: "3 per row",
+    view_1: "1 per row",
+    view_2: "2 per row",
+    view_grid: "Grid",
+    view_list: "List",
+    view_compact: "Compact",
+    btn_add_to_preset: "Add to preset",
+    btn_create_preset: "Add preset",
+    btn_find_analogs: "Find analogs",
+    btn_back: "Back",
+    btn_print: "Print prescription",
+    btn_close: "CLOSE",
+    btn_save: "Save",
+    modal_select_preset: "Select Preset",
+    set_cat_theme: "Palette & Theme",
+    set_cat_ui: "Interface & Background",
+    set_cat_lang: "Language",
+    set_cat_catalog: "Catalog & Search",
+    set_cat_print: "Printing",
+    set_preset_theme: "Base Color Scheme",
+    set_custom_wheel: "Custom Spectrum RGB",
+    set_contrast: "Card Contrast",
+    set_particles: "Floating Background Orbs",
+    set_particles_count: "Number of Background Orbs",
+    set_radius: "Corner Roundness",
+    set_glare: "Sliding Glare on Hover",
+    set_blur: "Modal Backdrop Blur",
+    set_font_scale: "Font Scale",
+    set_ui_lang: "Interface Language",
+    set_latin_inn: "Show Active Substance",
+    set_default_grid: "Default Card View",
+    set_sort: "List Sorting",
+    set_instant_search: "Instant Search Filter",
+    set_paper: "Paper Format",
+    set_rx_prefix: "Rp. / S. Abbreviations",
+    set_print_border: "Print Document Border",
+    theme_classic: "Gemini",
+    theme_medical: "Blue",
+    theme_emerald: "Sage",
+    theme_warm: "Quartz",
+    theme_graphite: "Graphite",
+    results_prefix: "Medications found"
+  },
+  de: {
+    top_status: "Klinisches Register",
+    hero_kicker: "KLINISCHES VERZEICHNIS",
+    app_title: "ARZNEIMITTELVERZEICHNIS",
+    hero_subtitle: "Krankheit, Symptom oder Medikament zur Therapieauswahl eingeben",
+    nav_home: "Startseite",
+    nav_settings: "Einstellungen",
+    nav_presets: "Vorlagen",
+    nav_faq: "FAQ",
+    search_placeholder: "Krankheit oder Symptom eingeben...",
+    filter_btn: "Filter",
+    view_3: "3 pro Zeile",
+    view_1: "1 pro Zeile",
+    view_2: "2 pro Zeile",
+    view_grid: "Kacheln",
+    view_list: "Liste",
+    view_compact: "Kompakt",
+    btn_add_to_preset: "Zur Vorlage",
+    btn_create_preset: "Vorlage erstellen",
+    btn_find_analogs: "Analoga finden",
+    btn_back: "Zurück",
+    btn_print: "Rezept drucken",
+    btn_close: "SCHLIESSEN",
+    btn_save: "Speichern",
+    modal_select_preset: "Vorlage wählen",
+    set_cat_theme: "Farbpalette",
+    set_cat_ui: "Oberfläche & Hintergrund",
+    set_cat_lang: "Sprache",
+    set_cat_catalog: "Katalog & Suche",
+    set_cat_print: "Drucken",
+    set_preset_theme: "Farbschema",
+    set_custom_wheel: "Farbrad RGB",
+    set_contrast: "Kartenkontrast",
+    set_particles: "Schwebende Kugeln im Hintergrund",
+    set_particles_count: "Anzahl der Kugeln",
+    set_radius: "Abrundung",
+    set_glare: "Glanzeffekt",
+    set_blur: "Hintergrundunschärfe",
+    set_font_scale: "Schriftgröße",
+    set_ui_lang: "Sprache",
+    set_latin_inn: "Wirkstoff anzeigen",
+    set_default_grid: "Standardansicht",
+    set_sort: "Sortierung",
+    set_instant_search: "Sofortsuche",
+    set_paper: "Papierformat",
+    set_rx_prefix: "Rp. / S. Präfix",
+    set_print_border: "Rahmen drucken",
+    theme_classic: "Gemini",
+    theme_medical: "Blau",
+    theme_emerald: "Salbei",
+    theme_warm: "Quarz",
+    theme_graphite: "Graphit",
+    results_prefix: "Gefundene Präparate"
+  }
+};
+
+/* =========================================================================
+   БАЗА ДАННЫХ: 100 ПРЕПАРАТОВ ТЕРАПЕВТА (ЖНВЛП МИНЗДРАВА РФ) ПО БОЛЕЗНЯМ
+========================================================================= */
+const RAW_DB = [
+  "Парацетамол|Парацетамол|Таблетки 500 мг|Боль и лихорадка|ОРВИ, грипп, лихорадка, температура, головная боль, мигрень, зубная боль|#3b82f6|500 мг|3 раза в день|После еды|5 дней",
+  "Панадол|Парацетамол|Таблетки 500 мг|Боль и лихорадка|ОРВИ, грипп, температура, лихорадка, головная боль, мигрень|#2563eb|500 мг|3 раза в день|После еды|5 дней",
+  "Эффералган|Парацетамол|Таблетки шипучие 500 мг|Боль и лихорадка|ОРВИ, грипп, высокая температура, лихорадка, мигрень, простуда|#1d4ed8|500 мг|3 раза в день|Растворить в воде|5 дней",
+  "Ибупрофен|Ибупрофен|Таблетки 400 мг|Боль и лихорадка|ОРВИ, грипп, температура, мигрень, головная боль, артрит, остеохондроз, зубная боль|#ef4444|400 мг|2–3 раза в день|После еды|5 дней",
+  "Нурофен Форте|Ибупрофен|Таблетки 400 мг|Боль и лихорадка|Головная боль, мигрень, температура, ОРВИ, невралгия, остеохондроз|#dc2626|400 мг|2 раза в день|После еды|5 дней",
+  "МИГ 400|Ибупрофен|Таблетки 400 мг|Боль и лихорадка|Мигрень, головная боль, зубная боль, лихорадка, простуда, температура|#b91c1c|400 мг|2 раза в день|После еды|5 дней",
+  "Нимесулид|Нимесулид|Таблетки 100 мг|Боль и лихорадка|Остеохондроз, артрит, артроз, радикулит, зубная боль, воспаление, боль в спине|#f97316|100 мг|2 раза в день|После еды|7 дней",
+  "Найз|Нимесулид|Таблетки 100 мг|Боль и лихорадка|Остеохондроз, артрит, боль в суставах, радикулит, бурсит, зубная боль|#ea580c|100 мг|2 раза в день|После еды|7 дней",
+  "Мелоксикам|Мелоксикам|Таблетки 15 мг|Боль и лихорадка|Артрит, остеоартроз, остеохондроз, спондилит, боль в спине и суставах|#d97706|15 мг|1 раз в день|Во время еды|10 дней",
+  "Мовалис|Мелоксикам|Таблетки 15 мг|Боль и лихорадка|Ревматоидный артрит, остеохондроз, артроз, радикулит, суставная боль|#b45309|15 мг|1 раз в день|Во время еды|10 дней",
+  "Амоксициллин|Амоксициллин|Капсулы 500 мг|Ангина и синусит|Ангина, тонзиллит, синусит, гайморит, отит, бронхит, пневмония, фарингит|#0ea5e9|500 мг|3 раза в день|После еды|7 дней",
+  "Флемоксин Солютаб|Амоксициллин|Таблетки 500 мг|Ангина и синусит|Ангина, тонзиллит, гайморит, синусит, бронхит, отит, фарингит|#0284c7|500 мг|3 раза в день|Во время еды|7 дней",
+  "Амоксиклав|Амоксициллин+Клавуланат|Таблетки 875+125 мг|Ангина и синусит|Гнойная ангина, гайморит, синусит, отит, бронхит, пневмония, цистит, пиелонефрит|#0369a1|1000 мг|2 раза в день|В начале еды|7 дней",
+  "Аугментин|Амоксициллин+Клавуланат|Таблетки 875+125 мг|Ангина и синусит|Ангина, тонзиллит, синусит, гайморит, отит, пневмония, бронхит, цистит|#075985|1000 мг|2 раза в день|В начале еды|7 дней",
+  "Азитромицин|Азитромицин|Капсулы 500 мг|Ангина и синусит|Ангина, фарингит, синусит, бронхит, пневмония, тонзиллит, уретрит|#06b6d4|500 мг|1 раз в день|За 1 ч до еды|3 дня",
+  "Сумамед|Азитромицин|Таблетки 500 мг|Ангина и синусит|Ангина, тонзиллит, гайморит, синусит, бронхит, пневмония, ларингит|#0891b2|500 мг|1 раз в день|За 1 ч до еды|3 дня",
+  "Кларитромицин|Кларитромицин|Таблетки 500 мг|Ангина и синусит|Бронхит, пневмония, фарингит, синусит, гастрит и язва|#0e7490|500 мг|2 раза в день|Во время еды|7 дней",
+  "Клацид|Кларитромицин|Таблетки 500 мг|Ангина и синусит|Бронхит, пневмония, ангина, синусит, тонзиллит, ларингит|#155e75|500 мг|2 раза в день|Во время еды|7 дней",
+  "Левофлоксацин|Левофлоксацин|Таблетки 500 мг|Ангина и синусит|Пневмония, хронический бронхит, гайморит, синусит, цистит, пиелонефрит|#38bdf8|500 мг|1 раз в день|Запивая водой|7–10 дней",
+  "Таваник|Левофлоксацин|Таблетки 500 мг|Ангина и синусит|Пневмония, синусит, бронхит, пиелонефрит, цистит|#0284c7|500 мг|1 раз в день|Независимо от еды|7–10 дней",
+  "Умифеновир|Умифеновир|Капсулы 200 мг|ОРВИ и грипп|ОРВИ, грипп, простуда, вирусная инфекция, насморк, лихорадка|#6366f1|200 мг|4 раза в день|До еды|5 дней",
+  "Арбидол Максимум|Умифеновир|Капсулы 200 мг|ОРВИ и грипп|Грипп А и В, ОРВИ, простуда, вирусный ринит, бронхит|#4f46e5|200 мг|4 раза в день|До еды|5 дней",
+  "Афлюдол|Умифеновир|Таблетки 100 мг|ОРВИ и грипп|ОРВИ, грипп, простуда, профилактика вирусных инфекций|#4338ca|200 мг|4 раза в день|До еды|5 дней",
+  "Осельтамивир|Осельтамивир|Капсулы 75 мг|ОРВИ и грипп|Грипп типа А и В, тяжелая простуда, вирусная лихорадка|#8b5cf6|75 мг|2 раза в день|Во время еды|5 дней",
+  "Номидес|Осельтамивир|Капсулы 75 мг|ОРВИ и грипп|Грипп, ОРВИ, высокая вирусная температура, ломота|#7c3aed|75 мг|2 раза в день|Во время еды|5 дней",
+  "Тамифлю|Осельтамивир|Капсулы 75 мг|ОРВИ и грипп|Грипп А и В, лечение и профилактика гриппа|#6d28d9|75 мг|2 раза в день|Во время еды|5 дней",
+  "Ингавирин|Имидазолилэтанамид|Капсулы 90 мг|ОРВИ и грипп|ОРВИ, грипп, парагрипп, аденовирусная инфекция, простуда|#e11d48|90 мг|1 раз в день|Независимо от еды|5–7 дней",
+  "Кагоцел|Кагоцел|Таблетки 12 мг|ОРВИ и грипп|ОРВИ, грипп, простуда, герпес|#be123c|24 мг|3 раза в день|Независимо от еды|4 дня",
+  "Ацикловир|Ацикловир|Таблетки 400 мг|ОРВИ и грипп|Герпес, опоясывающий лишай, ветряная оспа, вирус герпеса|#3b82f6|400 мг|5 раз в день|После еды|5–7 дней",
+  "Валтрекс|Ацикловир|Таблетки 500 мг|ОРВИ и грипп|Герпес лабиальный, опоясывающий герпес, вирусные инфекции|#1d4ed8|500 мг|2 раза в день|Запивая водой|5 дней",
+  "Омепразол|Омепразол|Капсулы 20 мг|Гастрит и изжога|Гастрит, изжога, язва желудка, ГЭРБ, рефлюкс, дуоденит, боль в желудке|#a855f7|20 мг|1 раз в день|За 30 мин до еды|14–28 дней",
+  "Омез|Омепразол|Капсулы 20 мг|Гастрит и изжога|Гастрит, изжога, язвенная болезнь, эзофагит, рефлюкс|#9333ea|20 мг|1 раз в день|Утром до завтрака|14–28 дней",
+  "Ультоп|Омепразол|Капсулы 20 мг|Гастрит и изжога|Гастрит с повышенной кислотностью, изжога, язва, ГЭРБ|#7e22ce|20 мг|1 раз в день|До еды|14–28 дней",
+  "Пантопразол|Пантопразол|Таблетки 40 мг|Гастрит и изжога|Гастрит, язва желудка и 12-перстной кишки, изжога, рефлюкс, ГЭРБ|#c084fc|40 мг|1 раз в день|За 30 мин до еды|14–28 дней",
+  "Нольпаза|Пантопразол|Таблетки 40 мг|Гастрит и изжога|Изжога, гастрит, эрозивный эзофагит, язва желудка, кислая отрыжка|#a855f7|40 мг|1 раз в день|До завтрака|14–28 дней",
+  "Контролок|Пантопразол|Таблетки 40 мг|Гастрит и изжога|Гастрит, ГЭРБ, язвенная болезнь желудка, изжога|#9333ea|40 мг|1 раз в день|До еды|14–28 дней",
+  "Эзомепразол|Эзомепразол|Таблетки 20 мг|Гастрит и изжога|ГЭРБ, сильная изжога, гастрит, язва желудка, рефлюкс-эзофагит|#d946ef|20 мг|1 раз в день|До еды|14–28 дней",
+  "Нексиум|Эзомепразол|Таблетки 20 мг|Гастрит и изжога|Изжога, рефлюкс, эзофагит, гастрит, пептическая язва|#c026d3|20 мг|1 раз в день|Утром|14–28 дней",
+  "Итоприд|Итоприд|Таблетки 50 мг|Гастрит и изжога|Хронический гастрит, вздутие, тяжесть в желудке, тошнота, изжога, диспепсия|#ec4899|50 мг|3 раза в день|До еды|14 дней",
+  "Ганатон|Итоприд|Таблетки 50 мг|Гастрит и изжога|Диспепсия, гастрит, тяжесть после еды, изжога, метеоризм, тошнота|#db2777|50 мг|3 раза в день|За 20 мин до еды|14 дней",
+  "Дротаверин|Дротаверин|Таблетки 40 мг|Спазмы и колики|Спазмы в животе, колики, холецистит, панкреатит, цистит, головная боль|#eab308|40–80 мг|2–3 раза в день|При болях|3–5 дней",
+  "Но-Шпа|Дротаверин|Таблетки 40 мг|Спазмы и колики|Спазмы желудка и кишечника, желчная и почечная колика, спастическая боль|#ca8a04|40–80 мг|2–3 раза в день|Независимо от еды|3–5 дней",
+  "Спазмол|Дротаверин|Таблетки 40 мг|Спазмы и колики|Спазмы гладкой мускулатуры, колики, боль в животе, холецистит|#a16207|40–80 мг|2–3 раза в день|После еды|3–5 дней",
+  "Мебеверин|Мебеверин|Капсулы 200 мг|Спазмы и колики|Синдром раздраженного кишечника, СРК, колит, спазмы кишечника, боль в животе|#f59e0b|200 мг|2 раза в день|За 20 мин до еды|14 дней",
+  "Дюспаталин|Мебеверин|Капсулы 200 мг|Спазмы и колики|СРК, кишечная колика, спазмы ЖКТ, панкреатит, холецистит|#d97706|200 мг|2 раза в день|За 20 мин до еды|14–28 дней",
+  "Спарекс|Мебеверин|Капсулы 200 мг|Спазмы и колики|Спазмы кишечника, колит, СРК, желчные колики|#b45309|200 мг|2 раза в день|Утром и вечером|14 дней",
+  "Тримебутин|Тримебутин|Таблетки 200 мг|Спазмы и колики|СРК, вздутие, спазмы кишечника, нарушение стула, гастродуоденит|#10b981|200 мг|3 раза в день|За 15 мин до еды|14–28 дней",
+  "Тримедат|Тримебутин|Таблетки 200 мг|Спазмы и колики|Колики, вздутие живота, СРК, панкреатит, диспепсия|#059669|200 мг|3 раза в день|До еды|14–28 дней",
+  "Смекта|Сорбенты|Порошок 3 г|Спазмы и колики|Диарея, пищевое отравление, интоксикация, ротавирус, вздутие, изжога|#14b8a6|1 пакет|3 раза в день|Между приемами пищи|3–5 дней",
+  "Полисорб МП|Сорбенты|Порошок для суспензии|Спазмы и колики|Отравление, диарея, кишечная инфекция, пищевая аллергия, интоксикация|#0d9488|1 ст. ложка|3 раза в день|В 100 мл воды|3–5 дней",
+  "Лозартан|Лозартан|Таблетки 50 мг|Гипертония|Гипертония, повышенное давление, сердечная недостаточность, гипертензия|#f43f5e|50 мг|1 раз в день|Утром|Постоянно",
+  "Лориста|Лозартан|Таблетки 50 мг|Гипертония|Гипертония, высокое давление, артериальная гипертензия, ХСН|#e11d48|50 мг|1 раз в день|Утром|Постоянно",
+  "Козаар|Лозартан|Таблетки 50 мг|Гипертония|Артериальная гипертония, давление, защита почек при диабете|#be123c|50 мг|1 раз в день|Ежедневно|Постоянно",
+  "Валсартан|Валсартан|Таблетки 80 мг|Гипертония|Гипертония, повышенное давление, сердечная недостаточность, ИБС|#ec4899|80 мг|1–2 раза в день|Под контролем АД|Постоянно",
+  "Вальсакор|Валсартан|Таблетки 80 мг|Гипертония|Гипертония, высокое артериальное давление, ХСН|#db2777|80 мг|1 раз в день|Утром|Постоянно",
+  "Телмисартан|Телмисартан|Таблетки 40 мг|Гипертония|Стойкая гипертония, высокое давление, профилактика инсульта|#9333ea|40 мг|1 раз в день|Утром|Постоянно",
+  "Телзап|Телмисартан|Таблетки 40 мг|Гипертония|Гипертония, артериальная гипертензия, перепады давления|#7e22ce|40 мг|1 раз в день|Утром|Постоянно",
+  "Эналаприл|Эналаприл|Таблетки 10 мг|Гипертония|Гипертония, повышенное давление, сердечная недостаточность|#ef4444|10 мг|1–2 раза в день|Под контролем АД|Постоянно",
+  "Периндоприл|Периндоприл|Таблетки 5 мг|Гипертония|Гипертония, ИБС, стенокардия, высокое давление|#3b82f6|5 мг|1 раз в день|Утром до еды|Постоянно",
+  "Престариум А|Периндоприл|Таблетки 5 мг|Гипертония|Гипертония, давление, ишемическая болезнь сердца, стенокардия|#2563eb|5 мг|1 раз в день|Утром натощак|Постоянно",
+  "Бисопролол|Бисопролол|Таблетки 5 мг|Гипертония|Тахикардия, аритмия, гипертония, стенокардия, ИБС, высокий пульс|#0284c7|5 мг|1 раз в день|Утром|Постоянно",
+  "Конкор|Бисопролол|Таблетки 5 мг|Гипертония|Тахикардия, гипертония, стенокардия, аритмия, сердечная недостаточность|#0369a1|5 мг|1 раз в день|Утром натощак|Постоянно",
+  "Бипрол|Бисопролол|Таблетки 5 мг|Гипертония|Гипертония, учащенное сердцебиение, тахикардия, стенокардия|#075985|5 мг|1 раз в день|Утром|Постоянно",
+  "Метопролол|Метопролол|Таблетки 50 мг|Гипертония|Аритмия, тахикардия, гипертония, стенокардия, мигрень|#0891b2|50 мг|1–2 раза в день|Под контролем ЧСС|Постоянно",
+  "Беталок ЗОК|Метопролол|Таблетки 50 мг|Гипертония|Гипертония, тахикардия, аритмия, стенокардия, ХСН|#0e7490|50 мг|1 раз в день|Утром|Постоянно",
+  "Амлодипин|Амлодипин|Таблетки 5 мг|Гипертония|Гипертония, высокое давление, стенокардия, спазм сосудов|#4f46e5|5 мг|1 раз в день|Ежедневно|Постоянно",
+  "Норваск|Амлодипин|Таблетки 5 мг|Гипертония|Артериальная гипертония, давление, стенокардия напряжения|#4338ca|5 мг|1 раз в день|Независимо от еды|Постоянно",
+  "Аторвастатин|Статины|Таблетки 20 мг|Гипертония|Атеросклероз, высокий холестерин, гиперлипидемия, ИБС|#7c3aed|20 мг|1 раз в день|Вечером|Постоянно",
+  "Липримар|Статины|Таблетки 20 мг|Гипертония|Высокий холестерин, атеросклероз сосудов, ИБС|#6d28d9|20 мг|1 раз в день|Вечером|Постоянно",
+  "Розувастатин|Статины|Таблетки 10 мг|Гипертония|Атеросклероз, повышенный холестерин, бляшки в сосудах, ИБС|#5b21b6|10 мг|1 раз в день|Вечером|Постоянно",
+  "Амброксол|Амброксол|Таблетки 30 мг|Бронхит и кашель|Кашель, бронхит, трахеит, пневмония, вязкая мокрота, простуда|#22c55e|30 мг|3 раза в день|После еды|7 дней",
+  "Лазолван|Амброксол|Таблетки 30 мг|Бронхит и кашель|Влажный и сухой кашель, острый бронхит, трахеит, ХОБЛ, пневмония|#16a34a|30 мг|3 раза в день|После еды|7 дней",
+  "Амбробене|Амброксол|Таблетки 30 мг|Бронхит и кашель|Кашель с трудноотделяемой мокротой, бронхит, трахеит, ларингит|#15803d|30 мг|3 раза в день|После еды|7 дней",
+  "Ацетилцистеин|Ацетилцистеин|Таблетки шипучие 600 мг|Бронхит и кашель|Сильный кашель, бронхит, трахеит, гайморит, синусит, густая мокрота|#10b981|600 мг|1 раз в день|Растворить в воде|5–7 дней",
+  "АЦЦ Лонг|Ацетилцистеин|Таблетки шипучие 600 мг|Бронхит и кашель|Кашель, острый и хронический бронхит, ларинготрахеит, синусит|#059669|600 мг|1 раз в день|Утром после еды|5–7 дней",
+  "Флуимуцил|Ацетилцистеин|Таблетки шипучие 600 мг|Бронхит и кашель|Бронхит, кашель, трахеит, пневмония, гайморит|#047857|600 мг|1 раз в день|В 100 мл воды|5–7 дней",
+  "Бромгексин|Бромгексин|Таблетки 8 мг|Бронхит и кашель|Кашель, трахеобронхит, бронхит, простудный кашель|#14b8a6|8 мг|3 раза в день|Запивая водой|7 дней",
+  "Бромгексин Берлин-Хеми|Бромгексин|Драже 8 мг|Бронхит и кашель|Острый бронхит, кашель, трахеит, ХОБЛ|#0d9488|8 мг|3 раза в день|После еды|7 дней",
+  "Пульмикорт|Бронхолитики|Суспензия 0.5 мг/мл|Бронхит и кашель|Бронхиальная астма, ХОБЛ, ларингит, стеноз гортани, обструктивный бронхит, кашель|#06b6d4|0.5 мг|2 раза в день|Через небулайзер|5–7 дней",
+  "Сальбутамол|Бронхолитики|Аэрозоль 100 мкг|Бронхит и кашель|Бронхиальная астма, удушье, бронхоспазм, ХОБЛ, обструктивный бронхит|#0284c7|1–2 вдоха|При приступе|Ингаляционно|По требованию",
+  "Цетиризин|Цетиризин|Таблетки 10 мг|Аллергия|Аллергия, аллергический ринит, насморк, крапивница, поллиноз, кожный зуд, отек|#14b8a6|10 мг|1 раз в день|Вечером|10 дней",
+  "Зиртек|Цетиризин|Таблетки 10 мг|Аллергия|Аллергия, сезонный ринит, конъюнктивит, чихание, крапивница, дерматит|#0d9488|10 мг|1 раз в день|Вечером|10 дней",
+  "Зодак|Цетиризин|Таблетки 10 мг|Аллергия|Аллергия, поллиноз, зуд кожи, аллергический насморк, крапивница|#0f766e|10 мг|1 раз в день|Независимо от еды|10 дней",
+  "Лоратадин|Лоратадин|Таблетки 10 мг|Аллергия|Аллергия, ринит, крапивница, укусы насекомых, пищевая аллергия, зуд|#06b6d4|10 мг|1 раз в день|До еды|10 дней",
+  "Кларитин|Лоратадин|Таблетки 10 мг|Аллергия|Аллергический ринит, поллиноз, крапивница, аллергия на пыльцу и шерсть|#0891b2|10 мг|1 раз в день|Ежедневно|10 дней",
+  "Дезлоратадин|Дезлоратадин|Таблетки 5 мг|Аллергия|Аллергия, заложенность носа, ринит, крапивница, слезотечение, зуд|#3b82f6|5 мг|1 раз в день|Независимо от еды|10–14 дней",
+  "Эриус|Дезлоратадин|Таблетки 5 мг|Аллергия|Аллергический ринит, поллиноз, крапивница, кожная сыпь и зуд|#2563eb|5 мг|1 раз в день|В любое время|10–14 дней",
+  "Левоцетиризин|Левоцетиризин|Таблетки 5 мг|Аллергия|Аллергия, круглогодичный ринит, крапивница, отек Квинке, дерматоз|#6366f1|5 мг|1 раз в день|Вечером|10 дней",
+  "Ксизал|Левоцетиризин|Таблетки 5 мг|Аллергия|Аллергия, поллиноз, крапивница, аллергический конъюнктивит|#4f46e5|5 мг|1 раз в день|Вечером|10 дней",
+  "Супрастин|Хлоропирамин|Таблетки 25 мг|Аллергия|Острая аллергия, отек Квинке, крапивница, сыпь, зуд, реакция на укусы|#4338ca|25 мг|2–3 раза в день|Во время еды|5 дней",
+  "Метформин|Метформин|Таблетки 850 мг|Диабет и эндокринология|Сахарный диабет 2 типа, инсулинорезистентность, высокий сахар в крови, ожирение|#8b5cf6|850 мг|2 раза в день|Во время еды|Постоянно",
+  "Сиофор 850|Метформин|Таблетки 850 мг|Диабет и эндокринология|Сахарный диабет, повышенная глюкоза крови, метаболический синдром|#7c3aed|850 мг|2 раза в день|Во время еды|Постоянно",
+  "Глюкофаж Лонг|Метформин|Таблетки 750 мг|Диабет и эндокринология|Сахарный диабет 2 типа, предиабет, гипергликемия|#6d28d9|750 мг|1–2 раза в день|Во время ужина|Постоянно",
+  "Левотироксин|Левотироксин|Таблетки 50 мкг|Диабет и эндокринология|Гипотиреоз, заболевания щитовидной железы, дефицит гормонов, зоб|#ec4899|50 мкг|1 раз в день|Натощак утром|Постоянно",
+  "Эутирокс|Левотироксин|Таблетки 50 мкг|Диабет и эндокринология|Гипотиреоз, тиреоидит, узловой зоб, щитовидная железа|#db2777|50 мкг|1 раз в день|Утром натощак|Постоянно",
+  "L-Тироксин|Левотироксин|Таблетки 50 мкг|Диабет и эндокринология|Гипотиреоз, недостаточность щитовидной железы|#be185d|50 мкг|1 раз в день|За 30 мин до завтрака|Постоянно",
+  "Торасемид|Диуретики|Таблетки 5 мг|Гипертония|Отеки, сердечная недостаточность, задержка жидкости, гипертония|#0ea5e9|5 мг|1 раз в день|Утром|По назначению",
+  "Диувер|Диуретики|Таблетки 5 мг|Гипертония|Отечный синдром, отеки ног, ХСН, артериальная гипертония|#0284c7|5 мг|1 раз в день|Утром|По назначению",
+  "Ацетилсалициловая к-та|Антиагреганты|Таблетки 100 мг|Гипертония|Профилактика тромбоза, инфаркта и инсульта, ИБС, густая кровь, стенокардия|#ef4444|100 мг|1 раз в день|Вечером после еды|Постоянно",
+  "Кардиомагнил|Антиагреганты|Таблетки 75 мг|Гипертония|Профилактика тромбозов, ИБС, стенокардия, гипертония, разжижение крови|#dc2626|75 мг|1 раз в день|Вечером после еды|Постоянно"
+];
+
+const DRUGS_DB = RAW_DB.map((line, idx) => {
+  const p = line.split("|");
+  return {
+    id: idx + 1,
+    name: p[0],
+    inn: p[1],
+    subtitle: p[2],
+    category: p[3],
+    diseases: p[4],
+    color: p[5],
+    defaultDose: p[6],
+    defaultFreq: p[7],
+    defaultRule: p[8],
+    defaultDays: p[9],
+    indications: `Терапия заболеваний: ${p[4]}. Рекомендовано стандартами Минздрава РФ по группе «${p[3]}».`,
+    dosage: `Принимать по ${p[6]} — ${p[7]} (${p[8]}). Курс: ${p[9]}.`,
+    contraindications: `Гиперчувствительность к активному веществу ${p[1]}.`
+  };
+});</script>
+  <script>/* =========================================================================
+   СОСТОЯНИЕ И НАСТРОЙКИ ПРИЛОЖЕНИЯ
+========================================================================= */
+const appConfig = {
+  lang: "ru",
+  displayMode: "light",
+  glare: true,
+  blur: true,
+  particles: true,
+  particlesCount: 24,
+  showInn: true,
+  paperSize: "A4",
+  useRxPrefix: true,
+  printBorder: true,
+  currentHue: 216
+};
+
+let activeCategory = "Все";
+let selectedDisease = "";
+let activeAnalogInn = null;
+let pendingDrugIdForPreset = null;
+let openedPresetId = null;
+let presetIdToDelete = null;
+let presetsViewMode = "grid";
+let innerPresetViewMode = "list";
+
+let userPresets = [
+  {
+    id: "preset-1",
+    name: "ОРВИ и температура",
+    items: [{ ...DRUGS_DB[0] }, { ...DRUGS_DB[20] }, { ...DRUGS_DB[70] }]
+  },
+  {
+    id: "preset-2",
+    name: "Гастрит и спазмы ЖКТ",
+    items: [{ ...DRUGS_DB[30] }, { ...DRUGS_DB[43] }]
+  }
+];
+
+function t(key) {
+  return (I18N[appConfig.lang] && I18N[appConfig.lang][key]) || I18N.ru[key] || key;
+}
+
+/* Собираем все уникальные болезни из базы Минздрава РФ для автодополнения */
+const ALL_DISEASES = (() => {
+  const map = new Map();
+  DRUGS_DB.forEach(drug => {
+    drug.diseases.split(",").forEach(raw => {
+      const clean = raw.trim();
+      if (!clean) return;
+      const formatted = clean.charAt(0).toUpperCase() + clean.slice(1);
+      const key = formatted.toLowerCase();
+      if (!map.has(key)) map.set(key, { name: formatted, count: 0 });
+      map.get(key).count++;
+    });
+  });
+  return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name, "ru"));
+})();
+
+/* =========================================================================
+   ЛЕТАЮЩИЕ ШАРИКИ НА ФОНЕ
+========================================================================= */
+let particlesArray = [];
+let mousePos = { x: -1000, y: -1000 };
+
+function createParticles(count) {
+  particlesArray = [];
+  const w = window.innerWidth || 1280;
+  const h = window.innerHeight || 800;
+  for (let i = 0; i < count; i++) {
+    particlesArray.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: 20 + Math.random() * 48,
+      vx: (Math.random() - 0.5) * 0.55,
+      vy: (Math.random() - 0.5) * 0.55,
+      alpha: 0.14 + Math.random() * 0.18
+    });
+  }
+}
+
+function initBackgroundParticles() {
+  const canvas = document.getElementById("bgParticles");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+
+  const resize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+  resize();
+  window.addEventListener("resize", resize);
+  window.addEventListener("mousemove", (e) => {
+    mousePos.x = e.clientX;
+    mousePos.y = e.clientY;
+  });
+
+  createParticles(appConfig.particlesCount);
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (appConfig.particles && appConfig.displayMode !== "a11y") {
+      for (const p of particlesArray) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x - p.r > canvas.width) p.x = -p.r;
+        if (p.x + p.r < 0) p.x = canvas.width + p.r;
+        if (p.y - p.r > canvas.height) p.y = -p.r;
+        if (p.y + p.r < 0) p.y = canvas.height + p.r;
+
+        const dx = p.x - mousePos.x;
+        const dy = p.y - mousePos.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 130 && dist > 0) {
+          p.x += (dx / dist) * 0.7;
+          p.y += (dy / dist) * 0.7;
+        }
+
+        const g = ctx.createRadialGradient(p.x, p.y, p.r * 0.1, p.x, p.y, p.r);
+        g.addColorStop(0, `rgba(255, 255, 255, ${p.alpha + 0.14})`);
+        g.addColorStop(0.55, `hsla(${appConfig.currentHue}, 55%, 66%, ${p.alpha})`);
+        g.addColorStop(1, "rgba(120, 148, 220, 0)");
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+function toggleBackgroundParticles(enabled) {
+  appConfig.particles = enabled;
+}
+
+function updateParticlesCount(val) {
+  appConfig.particlesCount = Number(val);
+  createParticles(appConfig.particlesCount);
+}
+
+/* =========================================================================
+   ПОИСК СТРОГО ПО БОЛЕЗНЯМ ЧЕРЕЗ ВЫПАДАЮЩИЙ ПРЯМОУГОЛЬНИК СОВПАДЕНИЙ
+========================================================================= */
+function getDrugSVG(drug) {
+  return `
+    <svg viewBox="0 0 180 140" xmlns="http://www.w3.org/2000/svg">
+      <rect x="16" y="20" width="118" height="82" rx="14" fill="#ffffff" stroke="#334155" stroke-width="1.6"/>
+      <rect x="16" y="20" width="118" height="24" rx="12" fill="${drug.color}"/>
+      <circle cx="34" cy="32" r="5.5" fill="#fff" opacity="0.9"/>
+      <rect x="46" y="29" width="66" height="6" rx="3" fill="#fff" opacity="0.9"/>
+      <text x="28" y="65" font-size="12.5" font-weight="bold" fill="#1e293b">${drug.name.slice(0, 15)}</text>
+      <text x="28" y="82" font-size="9.5" fill="#475569">${drug.subtitle.slice(0, 20)}</text>
+      <rect x="106" y="54" width="56" height="68" rx="12" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+      <circle cx="122" cy="73" r="8" fill="${drug.color}" opacity="0.9"/>
+      <circle cx="145" cy="73" r="8" fill="${drug.color}" opacity="0.9"/>
+      <circle cx="122" cy="100" r="8" fill="${drug.color}" opacity="0.9"/>
+      <circle cx="145" cy="100" r="8" fill="${drug.color}" opacity="0.9"/>
+    </svg>`;
+}
+
+function renderDiseaseSuggestions(queryText) {
+  const box = document.getElementById("diseaseSuggestionsBox");
+  const q = queryText.trim().toLowerCase();
+
+  if (!q) {
+    box.classList.remove("open");
+    return;
+  }
+
+  // Сначала болезни, начинающиеся на введенные буквы, затем содержащие их
+  const startsWith = ALL_DISEASES.filter(d => d.name.toLowerCase().startsWith(q));
+  const includes = ALL_DISEASES.filter(d => !d.name.toLowerCase().startsWith(q) && d.name.toLowerCase().includes(q));
+  const matches = [...startsWith, ...includes].slice(0, 10);
+
+  if (matches.length === 0) {
+    box.innerHTML = `<div style="padding:10px 16px; font-size:13.5px; color:var(--text-muted);">Совпадений по болезням не найдено</div>`;
+    box.classList.add("open");
+    return;
+  }
+
+  box.innerHTML = matches.map(item => `
+    <button class="disease-suggest-item" type="button" onclick="selectDiseaseFromList('${item.name.replace(/'/g, "\\'")}')">
+      <span>${item.name}</span>
+      <span class="disease-suggest-count">Препаратов: ${item.count}</span>
+    </button>
+  `).join("");
+
+  box.classList.add("open");
+}
+
+function selectDiseaseFromList(diseaseName) {
+  selectedDisease = diseaseName;
+  activeCategory = "Все";
+  activeAnalogInn = null;
+  document.getElementById("searchInput").value = diseaseName;
+  document.getElementById("filterBtn").textContent = t("filter_btn");
+  document.getElementById("diseaseSuggestionsBox").classList.remove("open");
+  document.getElementById("resetAnalogBtn").style.display = "none";
+  initFilterOptions();
+  openResultsView();
+}
+
+function initFilterOptions() {
+  const categories = ["Все", ...new Set(DRUGS_DB.map(d => d.category))];
+  document.getElementById("filterDropdown").innerHTML = categories.map(cat => `
+    <button class="filter-option ${cat === activeCategory ? 'active' : ''}" onclick="applyCategory('${cat}')">
+      ${cat === 'Все' ? 'Все группы' : cat}
+    </button>
+  `).join("");
+}
+
+function applyCategory(cat) {
+  activeCategory = cat;
+  selectedDisease = "";
+  activeAnalogInn = null;
+  document.getElementById("searchInput").value = "";
+  document.getElementById("resetAnalogBtn").style.display = "none";
+  document.getElementById("filterBtn").textContent = cat === "Все" ? t("filter_btn") : cat;
+  document.getElementById("filterDropdown").classList.remove("open");
+  document.getElementById("diseaseSuggestionsBox").classList.remove("open");
+  initFilterOptions();
+  openResultsView();
+}
+
+function openResultsView() {
+  document.getElementById("heroSection").classList.add("compact");
+  document.getElementById("resultsContainer").classList.add("visible");
+  renderCards();
+}
+
+function resetToHero() {
+  selectedDisease = "";
+  activeAnalogInn = null;
+  document.getElementById("searchInput").value = "";
+  document.getElementById("heroSection").classList.remove("compact");
+  document.getElementById("resultsContainer").classList.remove("visible");
+  document.getElementById("filterDropdown").classList.remove("open");
+  document.getElementById("diseaseSuggestionsBox").classList.remove("open");
+}
+
+function renderCards() {
+  const sortEl = document.getElementById("sortSelect");
+  const sortMode = sortEl ? sortEl.value : "id";
+  const diseaseLower = selectedDisease.trim().toLowerCase();
+
+  let list = DRUGS_DB.filter(d => {
+    if (activeAnalogInn) return d.inn === activeAnalogInn;
+    const matchCat = activeCategory === "Все" || d.category === activeCategory;
+    if (!diseaseLower) return matchCat;
+    return matchCat && d.diseases.toLowerCase().includes(diseaseLower);
+  });
+
+  if (sortMode === "alpha") list.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+  else if (sortMode === "category") list.sort((a, b) => a.category.localeCompare(b.category, "ru"));
+
+  const titlePrefix = activeAnalogInn
+    ? `Аналоги (${activeAnalogInn})`
+    : selectedDisease
+      ? `Болезнь: ${selectedDisease}`
+      : activeCategory !== "Все"
+        ? activeCategory
+        : t("results_prefix");
+
+  document.getElementById("resultsLabel").textContent = `${titlePrefix} — найдено: ${list.length}`;
+
+  const grid = document.getElementById("cardsGrid");
+  if (list.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:36px;">Препараты по данному заболеванию не найдены.</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(drug => `
+    <article class="drug-card ${appConfig.glare ? 'glare-active' : ''}" onclick="openDetailModal(${drug.id})" onmousemove="handleGlare(event, this)">
+      <div class="card-thumb">${getDrugSVG(drug)}</div>
+      <div class="card-body">
+        <span class="card-category">${drug.category}</span>
+        <h3 class="card-title">${drug.name}</h3>
+        ${appConfig.showInn ? `<span class="card-inn">МНН: ${drug.inn}</span>` : ''}
+        <div class="card-diseases">Болезни: ${drug.diseases}</div>
+      </div>
+      <button class="card-preset-btn" onclick="event.stopPropagation(); openPresetPicker(${drug.id})">
+        ${t("btn_add_to_preset")}
+      </button>
+    </article>
+  `).join("");
+}
+
+function handleGlare(e, card) {
+  const r = card.getBoundingClientRect();
+  card.style.setProperty("--mouse-x", `${e.clientX - r.left}px`);
+  card.style.setProperty("--mouse-y", `${e.clientY - r.top}px`);
+}
+
+function setCatalogView(mode, iconChar) {
+  document.getElementById("cardsGrid").classList.toggle("list-view", mode === "list");
+  document.getElementById("grid3Btn").classList.toggle("active", mode === "grid");
+  document.getElementById("grid1Btn").classList.toggle("active", mode === "list");
+  if (iconChar) document.getElementById("catalogViewIcon").textContent = iconChar;
+}
+
+/* =========================================================================
+   МОДАЛЬНОЕ ОКНО КАРТОЧКИ И ОТДЕЛЬНЫЙ ОВАЛ АНАЛОГОВ НИЖЕ ОКНА
+========================================================================= */
+function openDetailModal(drugId) {
+  const drug = DRUGS_DB.find(d => d.id === drugId);
+  if (!drug) return;
+
+  document.getElementById("modalAnalogsDrawer").style.display = "none";
+  document.getElementById("modalDescriptionBox").innerHTML = `
+    <span class="detail-badge">${drug.category}</span>
+    <h2>${drug.name}</h2>
+    <p style="opacity:0.75; font-size:13.5px;">${drug.subtitle} | МНН: ${drug.inn}</p>
+    <div class="detail-section"><strong>Заболевания и симптомы:</strong>${drug.diseases}</div>
+    <div class="detail-section"><strong>Клинические указания:</strong>${drug.indications}</div>
+    <div class="detail-section"><strong>Схема приема:</strong>${drug.dosage}</div>
+    <div class="detail-section"><strong>Противопоказания:</strong>${drug.contraindications}</div>
+  `;
+
+  document.getElementById("modalPhotoBox").innerHTML = getDrugSVG(drug);
+  document.getElementById("modalActionBox").innerHTML = `
+    <button class="elongated-oval-btn accent-fill" onclick="openPresetPicker(${drug.id})">${t("btn_add_to_preset")}</button>
+    <button class="elongated-oval-btn" onclick="showAnalogs(${drug.id})">${t("btn_find_analogs")}</button>
+  `;
+
+  openModal("detailModal");
+}
+
+function showAnalogs(drugId) {
+  const drug = DRUGS_DB.find(d => d.id === drugId);
+  const exact = DRUGS_DB.filter(d => d.inn === drug.inn && d.id !== drug.id);
+  const group = DRUGS_DB.filter(d => d.category === drug.category && d.inn !== drug.inn).slice(0, 5);
+  const all = [...exact, ...group];
+
+  const drawer = document.getElementById("modalAnalogsDrawer");
+  drawer.style.display = "flex";
+  drawer.innerHTML = `
+    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+      <strong style="font-size:13px; margin-right:6px;">Аналоги (${drug.inn}):</strong>
+      ${all.map(a => `<button class="analog-chip" onclick="openDetailModal(${a.id})">${a.name}</button>`).join("")}
+    </div>
+    <button class="oval-subtle-btn" style="height:30px; font-size:12px;" onclick="filterByAnalogInn('${drug.inn}')">
+      Вывести в каталог
+    </button>
+  `;
+}
+
+function filterByAnalogInn(inn) {
+  activeAnalogInn = inn;
+  closeModal("detailModal");
+  document.getElementById("resetAnalogBtn").style.display = "inline-flex";
+  openResultsView();
+}
+
+function clearAnalogFilter() {
+  activeAnalogInn = null;
+  document.getElementById("resetAnalogBtn").style.display = "none";
+  renderCards();
+}
+
+/* =========================================================================
+   ПРЕСЕТЫ, ПОДТВЕРЖДЕНИЕ УДАЛЕНИЯ И ПЕЧАТЬ
+========================================================================= */
+function openPresetPicker(drugId) {
+  pendingDrugIdForPreset = drugId;
+  toggleCreatePresetInput(false);
+  renderPickerList();
+  openModal("presetPickerModal");
+}
+
+function openCreatePresetModal() {
+  pendingDrugIdForPreset = null;
+  renderPickerList();
+  toggleCreatePresetInput(true);
+  openModal("presetPickerModal");
+}
+
+function renderPickerList() {
+  const box = document.getElementById("existingPresetsList");
+  if (userPresets.length === 0) {
+    box.innerHTML = `<div style="text-align:center; opacity:0.7; padding:10px;">Пресеты еще не созданы</div>`;
+    return;
+  }
+  box.innerHTML = userPresets.map(p => `
+    <div class="picker-preset-row" onclick="addDrugToPreset('${p.id}')">
+      <span>${p.name}</span>
+      <span style="font-size:12.5px; opacity:0.75;">Препаратов: ${p.items.length}</span>
+    </div>
+  `).join("");
+}
+
+function toggleCreatePresetInput(show) {
+  document.getElementById("createPresetForm").style.display = show ? "flex" : "none";
+  document.getElementById("showCreateInputBtn").style.display = show ? "none" : "inline-flex";
+  if (show) document.getElementById("newPresetNameInput").focus();
+}
+
+function confirmCreatePreset() {
+  const input = document.getElementById("newPresetNameInput");
+  const name = input.value.trim();
+  if (!name) return;
+
+  const newPreset = { id: "preset-" + Date.now(), name, items: [] };
+  if (pendingDrugIdForPreset) {
+    const drug = DRUGS_DB.find(d => d.id === pendingDrugIdForPreset);
+    if (drug) newPreset.items.push({ ...drug });
+  }
+  userPresets.push(newPreset);
+  input.value = "";
+  closeModal("presetPickerModal");
+  renderPresetsOverview();
+  showToast(`Пресет «${name}» создан`);
+}
+
+function addDrugToPreset(presetId) {
+  const preset = userPresets.find(p => p.id === presetId);
+  if (!preset) return;
+
+  if (pendingDrugIdForPreset) {
+    const drug = DRUGS_DB.find(d => d.id === pendingDrugIdForPreset);
+    if (drug && !preset.items.some(i => i.id === drug.id)) {
+      preset.items.push({ ...drug });
+    }
+    closeModal("presetPickerModal");
+    showToast(`Добавлено в «${preset.name}»`);
+  } else {
+    closeModal("presetPickerModal");
+    switchPage("presets");
+    openPresetDetail(presetId);
+  }
+  renderPresetsOverview();
+}
+
+function renderPresetsOverview() {
+  const grid = document.getElementById("presetsGridContainer");
+  grid.className = "presets-grid" + (presetsViewMode === "list" ? " list-mode" : presetsViewMode === "compact" ? " compact-mode" : "");
+
+  if (userPresets.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px;">Нет созданных пресетов</div>`;
+    return;
+  }
+
+  grid.innerHTML = userPresets.map(p => `
+    <div class="preset-folder-card" onclick="openPresetDetail('${p.id}')">
+      <button class="preset-delete-btn" onclick="event.stopPropagation(); askDeletePreset('${p.id}')" title="Удалить пресет">&times;</button>
+      <div class="preset-folder-title">${p.name}</div>
+      <div class="preset-folder-count">Лекарств: ${p.items.length}</div>
+    </div>
+  `).join("");
+}
+
+function askDeletePreset(id) {
+  if (!id) return;
+  presetIdToDelete = id;
+  openModal("confirmDeleteModal");
+}
+
+function confirmDeletePresetAction() {
+  if (!presetIdToDelete) return;
+  userPresets = userPresets.filter(p => p.id !== presetIdToDelete);
+  presetIdToDelete = null;
+  closeModal("confirmDeleteModal");
+  closePresetDetail();
+  renderPresetsOverview();
+  showToast("Пресет удален");
+}
+
+function setPresetsViewMode(mode, iconChar) {
+  presetsViewMode = mode;
+  document.getElementById("presetViewGridBtn").classList.toggle("active", mode === "grid");
+  document.getElementById("presetViewListBtn").classList.toggle("active", mode === "list");
+  document.getElementById("presetViewCompactBtn").classList.toggle("active", mode === "compact");
+  if (iconChar) document.getElementById("presetsViewIcon").textContent = iconChar;
+  renderPresetsOverview();
+}
+
+function openPresetDetail(id) {
+  openedPresetId = id;
+  const preset = userPresets.find(p => p.id === id);
+  if (!preset) return;
+
+  document.getElementById("presetsOverview").style.display = "none";
+  document.getElementById("presetDetailView").style.display = "block";
+  document.getElementById("openedPresetTitle").textContent = preset.name;
+  renderOpenedPresetDrugs();
+}
+
+function closePresetDetail() {
+  openedPresetId = null;
+  document.getElementById("presetsOverview").style.display = "block";
+  document.getElementById("presetDetailView").style.display = "none";
+  renderPresetsOverview();
+}
+
+function setInnerPresetView(mode, iconChar) {
+  innerPresetViewMode = mode;
+  document.getElementById("presetDrugsContainer").classList.toggle("grid-2", mode === "grid");
+  document.getElementById("innerView1Btn").classList.toggle("active", mode === "list");
+  document.getElementById("innerView2Btn").classList.toggle("active", mode === "grid");
+  if (iconChar) document.getElementById("innerPresetViewIcon").textContent = iconChar;
+}
+
+function renderOpenedPresetDrugs() {
+  const preset = userPresets.find(p => p.id === openedPresetId);
+  const box = document.getElementById("presetDrugsContainer");
+  if (!preset || preset.items.length === 0) {
+    box.innerHTML = `<div style="text-align:center; padding:30px;">В этом пресете пока нет препаратов</div>`;
+    return;
+  }
+
+  box.innerHTML = preset.items.map((item, idx) => `
+    <div class="prescription-item">
+      <div class="prescription-item-top">
+        <h4>${idx + 1}. ${item.name} <span style="font-weight:400; font-size:13px; opacity:0.7;">${item.subtitle}</span></h4>
+        <button class="circle-close-btn" style="width:30px; height:30px; font-size:18px;" onclick="removeDrugFromActivePreset(${idx})" title="Убрать препарат">&times;</button>
+      </div>
+      <div class="dosage-fields">
+        <div class="field-box">
+          <label>Разовая доза</label>
+          <input type="text" class="oval-input" value="${item.defaultDose}" oninput="updatePresetDrugField(${idx}, 'defaultDose', this.value)" />
+        </div>
+        <div class="field-box">
+          <label>Приемов в день</label>
+          <input type="text" class="oval-input" value="${item.defaultFreq}" oninput="updatePresetDrugField(${idx}, 'defaultFreq', this.value)" />
+        </div>
+        <div class="field-box">
+          <label>Порядок приема</label>
+          <input type="text" class="oval-input" value="${item.defaultRule}" oninput="updatePresetDrugField(${idx}, 'defaultRule', this.value)" />
+        </div>
+        <div class="field-box">
+          <label>Длительность курса</label>
+          <input type="text" class="oval-input" value="${item.defaultDays}" oninput="updatePresetDrugField(${idx}, 'defaultDays', this.value)" />
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function updatePresetDrugField(idx, field, val) {
+  const preset = userPresets.find(p => p.id === openedPresetId);
+  if (preset && preset.items[idx]) preset.items[idx][field] = val;
+}
+
+function removeDrugFromActivePreset(idx) {
+  const preset = userPresets.find(p => p.id === openedPresetId);
+  if (!preset) return;
+  preset.items.splice(idx, 1);
+  renderOpenedPresetDrugs();
+}
+
+function printActivePreset() {
+  const preset = userPresets.find(p => p.id === openedPresetId);
+  if (!preset || preset.items.length === 0) {
+    showToast("Пресет пуст");
+    return;
+  }
+
+  const borderCss = appConfig.printBorder ? "2px solid #000" : "none";
+  const maxW = appConfig.paperSize === "A5" ? "520px" : "760px";
+
+  document.getElementById("print-area").innerHTML = `
+    <div style="border:${borderCss}; padding:28px; max-width:${maxW}; margin:0 auto;">
+      <div style="display:flex; justify-content:space-between; border-bottom:1.5px solid #000; padding-bottom:10px; margin-bottom:20px;">
+        <strong>ЛИСТ НАЗНАЧЕНИЙ: ${preset.name.toUpperCase()}</strong>
+        <span>Дата: ${new Date().toLocaleDateString("ru-RU")}</span>
+      </div>
+      ${preset.items.map((item, idx) => `
+        <div style="margin-bottom:16px; padding-bottom:10px; border-bottom:1px dashed #888;">
+          <p style="font-size:16px;"><strong>${idx + 1}. ${appConfig.useRxPrefix ? 'Rp.: ' : ''}${item.name} (${item.subtitle})</strong></p>
+          <p style="font-size:14.5px; margin-left:18px; margin-top:4px;">
+            ${appConfig.useRxPrefix ? '<strong>S.:</strong> ' : ''}По <b>${item.defaultDose}</b> — <b>${item.defaultFreq}</b> (${item.defaultRule}). Курс: <b>${item.defaultDays}</b>.
+          </p>
+        </div>
+      `).join("")}
+    </div>
+  `;
+  window.print();
+}
+
+/* =========================================================================
+   НАВИГАЦИЯ, ТЕМЫ (СВЕТЛАЯ / ТЕМНАЯ / СЛАБОВИДЯЩИЕ) И RGB-КРУГ
+========================================================================= */
+function toggleMenuClick() {
+  document.getElementById("topHoverMenu").classList.toggle("force-open");
+}
+
+function switchPage(pageId) {
+  document.getElementById("topHoverMenu").classList.remove("force-open");
+  document.querySelectorAll(".page-section").forEach(sec => {
+    sec.classList.toggle("active", sec.id === `page-${pageId}`);
+  });
+  if (pageId === "presets") {
+    closePresetDetail();
+    renderPresetsOverview();
+  }
+}
+
+function switchSettingsTab(tabId) {
+  document.querySelectorAll(".settings-cat-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+  document.querySelectorAll(".settings-pane").forEach(p => p.classList.toggle("active", p.id === `tab-${tabId}`));
+}
+
+function setDisplayMode(mode, btnEl) {
+  appConfig.displayMode = mode;
+  document.body.classList.remove("dark-mode", "a11y-mode");
+  if (mode === "dark") document.body.classList.add("dark-mode");
+  else if (mode === "a11y") document.body.classList.add("a11y-mode");
+
+  if (btnEl) {
+    document.querySelectorAll(".theme-pill[onclick*='setDisplayMode']").forEach(b => b.classList.remove("active-mode"));
+    btnEl.classList.add("active-mode");
+  }
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add("open");
+  if (appConfig.blur) document.getElementById("app-wrapper").classList.add("blurred");
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove("open");
+  const anyOpen = document.querySelectorAll(".modal-overlay.open").length > 0;
+  if (!anyOpen) document.getElementById("app-wrapper").classList.remove("blurred");
+}
+
+function handleBackdropClose(e, id) {
+  if (e.target.id === id) closeModal(id);
+}
+
+function setLanguage(lang) {
+  appConfig.lang = lang;
+  document.querySelectorAll("[data-lang]").forEach(b => b.classList.toggle("active-lang", b.dataset.lang === lang));
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (I18N[lang] && I18N[lang][key]) el.textContent = I18N[lang][key];
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-i18n-placeholder");
+    if (I18N[lang] && I18N[lang][key]) el.placeholder = I18N[lang][key];
+  });
+  renderCards();
+}
+
+function updateRoundness(val) {
+  document.documentElement.style.setProperty("--radius-main", val);
+}
+
+function toggleGlareSetting(enabled) {
+  appConfig.glare = enabled;
+  renderCards();
+}
+
+function updateCardContrast(val) {
+  document.documentElement.style.setProperty("--card-bg", `hsl(${appConfig.currentHue}, 32%, ${val}%)`);
+}
+
+function applyCustomHue(h, bgSat, cardSat) {
+  appConfig.currentHue = h;
+  const r = document.documentElement;
+  r.style.setProperty("--bg-center", `hsl(${h}, ${bgSat}%, 95%)`);
+  r.style.setProperty("--bg-edge", `hsl(${h}, ${bgSat}%, 78%)`);
+  r.style.setProperty("--surface-dark", `hsl(${h}, ${cardSat}%, 20%)`);
+  r.style.setProperty("--surface-darker", `hsl(${h}, ${cardSat}%, 13%)`);
+  r.style.setProperty("--card-bg", `hsl(${h}, ${cardSat}%, 30%)`);
+  r.style.setProperty("--modal-outer", `hsl(${h}, ${bgSat}%, 66%)`);
+  r.style.setProperty("--accent", `hsl(${h}, ${cardSat + 25}%, 42%)`);
+  r.style.setProperty("--accent-soft", `hsl(${h}, ${bgSat + 20}%, 88%)`);
+}
+
+function applyPresetTheme(name, btnEl) {
+  if (btnEl) {
+    document.querySelectorAll(".theme-pill[onclick*='applyPresetTheme']").forEach(b => b.classList.remove("active-theme"));
+    btnEl.classList.add("active-theme");
+  }
+  if (name === "gemini") applyCustomHue(216, 28, 28);
+  else if (name === "medical") applyCustomHue(202, 34, 34);
+  else if (name === "emerald") applyCustomHue(154, 24, 28);
+  else if (name === "warm") applyCustomHue(28, 24, 24);
+  else if (name === "graphite") applyCustomHue(225, 10, 16);
+}
+
+function initColorWheel() {
+  const canvas = document.getElementById("rgbWheel");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const radius = canvas.width / 2;
+
+  for (let a = 0; a < 360; a++) {
+    ctx.beginPath();
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, (a - 1) * Math.PI / 180, (a + 1) * Math.PI / 180);
+    ctx.closePath();
+    const g = ctx.createRadialGradient(radius, radius, 0, radius, radius, radius);
+    g.addColorStop(0, `hsl(${a}, 15%, 95%)`);
+    g.addColorStop(0.7, `hsl(${a}, 75%, 58%)`);
+    g.addColorStop(1, `hsl(${a}, 85%, 42%)`);
+    ctx.fillStyle = g;
+    ctx.fill();
+  }
+
+  let drag = false;
+  const pick = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left - radius;
+    const y = e.clientY - rect.top - radius;
+    const d = Math.sqrt(x * x + y * y);
+    if (d > radius) return;
+    let hue = Math.atan2(y, x) * (180 / Math.PI);
+    if (hue < 0) hue += 360;
+    const sat = Math.min(d / radius, 1);
+    applyCustomHue(Math.round(hue), Math.round(14 + sat * 22), Math.round(18 + sat * 26));
+  };
+
+  canvas.addEventListener("mousedown", (e) => { drag = true; pick(e); });
+  window.addEventListener("mousemove", (e) => { if (drag) pick(e); });
+  window.addEventListener("mouseup", () => { drag = false; });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+}
+
+/* =========================================================================
+   ИНИЦИАЛИЗАЦИЯ ПРИ ЗАПУСКЕ
+========================================================================= */
+window.addEventListener("DOMContentLoaded", () => {
+  initFilterOptions();
+  initBackgroundParticles();
+  initColorWheel();
+  renderPresetsOverview();
+
+  const searchInput = document.getElementById("searchInput");
+
+  // При вводе текста показываем прямоугольник совпадений болезней
+  searchInput.addEventListener("input", (e) => {
+    document.getElementById("filterDropdown").classList.remove("open");
+    renderDiseaseSuggestions(e.target.value);
+  });
+
+  searchInput.addEventListener("focus", (e) => {
+    if (e.target.value.trim()) renderDiseaseSuggestions(e.target.value);
+  });
+
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const firstBtn = document.querySelector("#diseaseSuggestionsBox .disease-suggest-item");
+      if (firstBtn) firstBtn.click();
+    }
+  });
+
+  document.getElementById("filterBtn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.getElementById("diseaseSuggestionsBox").classList.remove("open");
+    document.getElementById("filterDropdown").classList.toggle("open");
+  });
+
+  document.addEventListener("click", (e) => {
+    const dd = document.getElementById("filterDropdown");
+    const sb = document.getElementById("diseaseSuggestionsBox");
+    const wrap = document.getElementById("searchWrapper");
+    if (dd && !dd.contains(e.target) && e.target.id !== "filterBtn") {
+      dd.classList.remove("open");
+    }
+    if (sb && wrap && !wrap.contains(e.target)) {
+      sb.classList.remove("open");
+    }
+  });
+});</script>
+</body>
+</html>

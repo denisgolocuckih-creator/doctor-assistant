@@ -1,0 +1,1539 @@
+:root {
+  --bg-center: #f0f4f9;
+  --bg-edge: #c2cde0;
+  --surface-dark: #1e2336;
+  --surface-darker: #141826;
+  --surface-glass: rgba(255, 255, 255, 0.88);
+  --panel-inner: #ffffff;
+  --gemini-pill-bg: #dde3ea;
+  --gemini-hover: rgba(68, 71, 70, 0.08);
+  --card-bg: #323956;
+  --card-border: rgba(255, 255, 255, 0.18);
+  --text-title: #1f1f1f;
+  --text-muted: #444746;
+  --text-on-dark: #f8fafd;
+  --accent: #0b57d0;
+  --accent-soft: #d3e3fd;
+  --modal-outer: #919cb5;
+  --radius-main: 28px;
+  --radius-pill: 999px;
+  --shadow-soft: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-hover: 0 20px 44px rgba(15, 23, 42, 0.24);
+}
+
+/* Темная тема */
+body.dark-mode {
+  --bg-center: #1a1e2e;
+  --bg-edge: #0d1017;
+  --surface-dark: #252b42;
+  --surface-darker: #161a29;
+  --surface-glass: rgba(30, 35, 54, 0.92);
+  --panel-inner: #262c44;
+  --gemini-pill-bg: #323954;
+  --gemini-hover: rgba(255, 255, 255, 0.08);
+  --card-bg: #22273d;
+  --text-title: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent: #60a5fa;
+  --accent-soft: rgba(96, 165, 250, 0.2);
+  --modal-outer: #2d3552;
+}
+
+/* Режим для слабовидящих */
+body.a11y-mode {
+  --bg-center: #ffffff;
+  --bg-edge: #e5e5e5;
+  --surface-dark: #000000;
+  --surface-darker: #222222;
+  --surface-glass: #ffffff;
+  --panel-inner: #ffffff;
+  --gemini-pill-bg: #e0e0e0;
+  --card-bg: #111111;
+  --card-border: #000000;
+  --text-title: #000000;
+  --text-muted: #111111;
+  --text-on-dark: #ffff00;
+  --accent: #000000;
+  --accent-soft: #ffeb3b;
+  --modal-outer: #222222;
+  font-size: 112%;
+  letter-spacing: 0.4px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  font-family: 'Google Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at 50% 35%, var(--bg-center) 0%, var(--bg-edge) 100%);
+  color: var(--text-title);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+#bgParticles {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app-wrapper {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: filter 0.3s ease;
+}
+
+#app-wrapper.blurred {
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+/* ================= ВЕРХНЕЕ МЕНЮ НА ВЕСЬ ВЕРХ БЕЗ БЛИКА И БЕЗ РАМКИ ================= */
+.top-nav-zone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 74px;
+  z-index: 150;
+  pointer-events: none;
+}
+
+.menu-trigger-btn {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  width: 52px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgba(120, 125, 140, 0.35);
+  background: var(--panel-inner);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 155;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.menu-trigger-btn:hover {
+  transform: scale(1.04);
+}
+
+.menu-trigger-btn span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text-title);
+  border-radius: 2px;
+}
+
+.top-hover-menu {
+  position: fixed;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  height: 56px;
+  padding: 0 24px 0 80px;
+  background: var(--surface-dark);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-12px);
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+  pointer-events: auto;
+  z-index: 152;
+}
+
+.top-nav-zone:hover .top-hover-menu,
+.top-hover-menu:hover,
+.top-hover-menu.force-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.top-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.top-menu-status {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  padding-right: 6px;
+}
+
+/* Кнопки меню: БЕЗ блика и БЕЗ окантовки */
+.nav-link {
+  height: 40px;
+  padding: 0 22px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-on-dark);
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* ================= КНОПКИ, КРЕСТИКИ И ВСПЛЫВАЮЩИЙ ВЫБОР ВИДА ================= */
+.elongated-oval-btn {
+  height: 40px;
+  padding: 0 24px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.elongated-oval-btn.accent-fill {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.elongated-oval-btn.full-width {
+  width: 100%;
+  height: 44px;
+}
+
+.elongated-oval-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+/* Красная кнопка Удалить */
+.danger-oval-btn {
+  height: 40px;
+  padding: 0 26px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: #dc2626;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.28);
+}
+
+.danger-oval-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+}
+
+.oval-subtle-btn {
+  height: 36px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.oval-subtle-btn:hover {
+  filter: brightness(0.95);
+}
+
+/* Круглый аккуратный крестик закрытия / возврата */
+.circle-close-btn,
+.window-corner-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.circle-close-btn:hover,
+.window-corner-close:hover {
+  background: #dc2626;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.window-corner-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 10;
+}
+
+/* Компактная иконка вида отображения с всплывающим окошком при наведении */
+.view-hover-Menu {
+  position: relative;
+  display: inline-block;
+}
+
+.view-icon-trigger {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.view-hover-Menu:hover .view-icon-trigger {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.view-popup-box {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  min-width: 150px;
+  background: var(--panel-inner);
+  border-radius: 18px;
+  padding: 6px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.96);
+  transition: all 0.2s ease;
+  z-index: 95;
+}
+
+.view-hover-Menu:hover .view-popup-box,
+.view-popup-box:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.view-popup-opt {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-title);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.view-popup-opt:hover {
+  background: var(--gemini-hover);
+}
+
+.view-popup-opt.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ================= ГЛАВНЫЙ ЭКРАН И АВТОДОПОЛНЕНИЕ БОЛЕЗНЕЙ ================= */
+.page-section {
+  display: none;
+}
+
+.page-section.active {
+  display: block;
+}
+
+.centered-page.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 74px 20px 40px 20px;
+}
+
+.hero-search-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 88vh;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.hero-search-section.compact {
+  min-height: auto;
+  padding-top: 76px;
+  padding-bottom: 10px;
+}
+
+.hero-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 5px 16px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 14px;
+}
+
+.app-title {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-title);
+  margin-bottom: 10px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.hero-subtitle {
+  font-size: 15.5px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.hero-search-section.compact .hero-kicker,
+.hero-search-section.compact .app-title,
+.hero-search-section.compact .hero-subtitle {
+  opacity: 0;
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.search-wrapper {
+  position: relative;
+  width: min(660px, 92vw);
+}
+
+.search-box {
+  width: 100%;
+  height: 52px;
+  background: var(--panel-inner);
+  border: 1px solid rgba(68, 71, 70, 0.22);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  padding: 6px 6px 6px 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  transition: all 0.25s ease;
+}
+
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 12px 30px rgba(11, 87, 208, 0.14), 0 0 0 3px var(--accent-soft);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 15.5px;
+  color: var(--text-title);
+  outline: none;
+  padding-right: 10px;
+}
+
+.search-input::placeholder {
+  color: #747775;
+}
+
+/* Компактная кнопка Фильтр */
+.filter-btn {
+  height: 38px;
+  min-width: 104px;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-title);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Прямоугольник совпадений болезней под строкой поиска */
+.disease-suggestions-box {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background: var(--panel-inner);
+  border-radius: 22px;
+  padding: 8px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  max-height: 270px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: all 0.2s ease;
+  z-index: 92;
+  text-align: left;
+}
+
+.disease-suggestions-box.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.disease-suggest-item {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-title);
+  font-size: 14.5px;
+  font-weight: 500;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.16s ease;
+}
+
+.disease-suggest-item:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.disease-suggest-count {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Компактное выпадающее меню фильтра */
+.filter-dropdown {
+  position: absolute;
+  top: 58px;
+  right: 0;
+  width: 205px;
+  background: var(--panel-inner);
+  border-radius: 18px;
+  padding: 6px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.97);
+  transition: all 0.2s ease;
+  z-index: 94;
+}
+
+.filter-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.filter-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text-title);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.filter-option:hover {
+  background: var(--gemini-hover);
+}
+
+.filter-option.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.search-divider {
+  width: min(300px, 60vw);
+  height: 1px;
+  background: rgba(68, 71, 70, 0.2);
+  margin-top: 14px;
+  opacity: 0;
+  transform: scaleX(0);
+  transition: 0.3s;
+}
+
+.hero-search-section.compact .search-divider {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* ================= КАТАЛОГ ПРЕПАРАТОВ ================= */
+.results-container {
+  width: min(1160px, 92vw);
+  margin: 0 auto 70px auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px);
+  transition: 0.35s ease;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.results-container.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  max-height: 35000px;
+  overflow: visible;
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0 20px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.results-header-left,
+.results-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.results-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.cards-grid.list-view {
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.drug-card {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: var(--radius-main);
+  min-height: 285px;
+  padding: 22px;
+  color: var(--text-on-dark);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.26s ease, box-shadow 0.26s ease, border-radius 0.25s ease;
+}
+
+.drug-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(340px circle at var(--mouse-x, 50%) var(--mouse-y, -20%), rgba(255, 255, 255, 0.22), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+
+.drug-card.glare-active:hover::before {
+  opacity: 1;
+}
+
+.drug-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.cards-grid.list-view .drug-card {
+  min-height: 124px;
+  flex-direction: row;
+  text-align: left;
+  padding: 18px 26px;
+  gap: 22px;
+}
+
+.card-thumb {
+  width: 110px;
+  height: 84px;
+  border-radius: calc(var(--radius-main) - 10px);
+  background: rgba(255, 255, 255, 0.13);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  flex-shrink: 0;
+  transition: border-radius 0.25s ease;
+}
+
+.card-thumb svg {
+  width: 100%;
+  height: 100%;
+}
+
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-category {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.76;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.card-inn {
+  font-size: 12.5px;
+  opacity: 0.74;
+}
+
+.card-diseases {
+  font-size: 12.5px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 5px 12px;
+  border-radius: 14px;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+.card-preset-btn {
+  height: 36px;
+  margin-top: 10px;
+  padding: 0 20px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+  flex-shrink: 0;
+}
+
+.cards-grid.list-view .card-preset-btn {
+  margin-top: 0;
+}
+
+.card-preset-btn:hover {
+  background: #ffffff;
+  color: #1f1f1f;
+}
+
+/* ================= НАСТРОЙКИ С БОКОВЫМ ОКОШКОМ "НАСТРОЙКИ" СЛЕВА ================= */
+.settings-outer-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: min(1140px, 95vw);
+}
+
+.settings-side-badge {
+  background: var(--surface-dark);
+  color: var(--text-on-dark);
+  padding: 18px 22px;
+  border-radius: calc(var(--radius-main) - 6px);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  box-shadow: var(--shadow-soft);
+  flex-shrink: 0;
+  margin-top: 24px;
+  transition: border-radius 0.25s ease;
+}
+
+.settings-shell {
+  position: relative;
+  flex: 1;
+  min-height: 510px;
+  background: var(--surface-glass);
+  backdrop-filter: blur(18px);
+  border-radius: var(--radius-main);
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: grid;
+  grid-template-columns: 235px 1fr;
+  overflow: hidden;
+  transition: border-radius 0.25s ease;
+}
+
+.settings-sidebar {
+  background: rgba(140, 150, 175, 0.14);
+  padding: 22px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settings-cat-btn {
+  height: 42px;
+  text-align: left;
+  padding: 0 18px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-cat-btn:hover {
+  background: var(--gemini-hover);
+  color: var(--text-title);
+}
+
+.settings-cat-btn.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.settings-content {
+  padding: 32px 64px 32px 36px;
+}
+
+.settings-pane {
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.settings-pane.active {
+  display: flex;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(120, 125, 140, 0.14);
+  gap: 16px;
+}
+
+.setting-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-title);
+}
+
+.theme-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.theme-pill {
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  color: var(--text-title);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.theme-pill:hover,
+.theme-pill.active-lang,
+.theme-pill.active-theme,
+.theme-pill.active-mode {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+#rgbWheel {
+  cursor: crosshair;
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 0 0 4px #fff;
+}
+
+.modern-select {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--gemini-pill-bg);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-title);
+  outline: none;
+  cursor: pointer;
+}
+
+.modern-range {
+  width: 180px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #c4c7c5;
+  transition: 0.25s;
+  border-radius: var(--radius-pill);
+}
+
+.slider::before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.25s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--accent);
+}
+
+input:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+/* ================= ПРЕСЕТЫ И FAQ ================= */
+.presets-shell,
+.faq-shell {
+  width: min(1100px, 92vw);
+  background: var(--surface-glass);
+  backdrop-filter: blur(18px);
+  border-radius: var(--radius-main);
+  padding: 30px;
+  box-shadow: var(--shadow-soft);
+  transition: border-radius 0.25s ease;
+}
+
+.presets-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(120, 125, 140, 0.15);
+}
+
+.section-heading {
+  font-size: 23px;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.presets-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.presets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.presets-grid.list-mode {
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.presets-grid.compact-mode {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.preset-folder-card {
+  position: relative;
+  background: var(--card-bg);
+  color: var(--text-on-dark);
+  border-radius: var(--radius-main);
+  padding: 24px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 150px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.24s ease, box-shadow 0.24s ease, border-radius 0.25s ease;
+}
+
+.presets-grid.list-mode .preset-folder-card {
+  min-height: 78px;
+  flex-direction: row;
+  align-items: center;
+  padding: 16px 24px;
+}
+
+.presets-grid.compact-mode .preset-folder-card {
+  min-height: 110px;
+  padding: 16px;
+}
+
+.preset-folder-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+.preset-folder-title {
+  font-size: 18.5px;
+  font-weight: 600;
+  padding-right: 28px;
+}
+
+.preset-folder-count {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 13px;
+  font-weight: 500;
+  width: fit-content;
+  margin-top: 10px;
+}
+
+.presets-grid.list-mode .preset-folder-count {
+  margin-top: 0;
+}
+
+.preset-delete-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.16);
+  border: none;
+  color: #fff;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.preset-delete-btn:hover {
+  background: #dc2626;
+}
+
+.preset-drugs-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.preset-drugs-list.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.prescription-item {
+  background: var(--panel-inner);
+  border-radius: calc(var(--radius-main) - 6px);
+  padding: 18px 22px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-radius 0.25s ease;
+}
+
+.prescription-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.dosage-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 10px;
+}
+
+.field-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-box label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.oval-input {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(120, 125, 140, 0.25);
+  background: var(--bg-center);
+  font-size: 13.5px;
+  color: var(--text-title);
+  outline: none;
+}
+
+.preset-bottom-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(120, 125, 140, 0.15);
+}
+
+/* ================= МОДАЛЬНЫЕ ОКНА И НИЖНИЙ БЛОК АНАЛОГОВ ================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 18, 35, 0.4);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.26s ease;
+  padding: 20px;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.detail-modal-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: min(880px, 95vw);
+}
+
+.detail-modal-wrapper {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 420px;
+}
+
+/* Круглый крестик сверху справа над модалкой */
+.modal-close-top {
+  position: absolute;
+  top: -46px;
+  right: 6px;
+  width: 38px;
+  height: 38px;
+  background: var(--panel-inner);
+  border: none;
+  color: var(--text-title);
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: 0.2s ease;
+}
+
+.modal-close-top:hover {
+  background: #dc2626;
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+.detail-left-panel,
+.detail-right-panel {
+  flex: 1;
+  background: var(--modal-outer);
+  border-radius: var(--radius-main);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.24);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  transition: border-radius 0.25s ease;
+}
+
+.detail-white-box {
+  background: var(--panel-inner);
+  border-radius: calc(var(--radius-main) - 8px);
+  flex: 1;
+  padding: 22px;
+  color: var(--text-title);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-radius 0.25s ease;
+}
+
+.detail-badge {
+  display: inline-block;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: var(--radius-pill);
+  width: fit-content;
+}
+
+.detail-section {
+  font-size: 13.5px;
+  line-height: 1.48;
+  color: var(--text-title);
+}
+
+.detail-section strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.detail-right-panel {
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.detail-photo-frame {
+  width: 88%;
+  height: 215px;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: calc(var(--radius-main) - 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  transition: border-radius 0.25s ease;
+}
+
+.detail-photo-frame svg {
+  width: 100%;
+  height: 100%;
+}
+
+.detail-right-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Отдельный блок с аналогами НИЖЕ окна карточки (повторяет форму и меняет скругление от настроек) */
+.analogs-external-oval {
+  width: 100%;
+  color: var(--text-title);
+  border-radius: var(--radius-main);
+  border: 14px solid transparent;
+  background:
+    linear-gradient(var(--panel-inner), var(--panel-inner)) padding-box,
+    linear-gradient(var(--modal-outer), var(--modal-outer)) border-box;
+  padding: 18px 24px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 20px 44px rgba(0, 0, 0, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  animation: fadeInOval 0.25s ease forwards;
+  transition: border-radius 0.25s ease;
+}
+
+@keyframes fadeInOval {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.analog-chip {
+  display: inline-block;
+  margin: 2px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: 0.18s;
+}
+
+.analog-chip:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Модалки выбора пресета и подтверждения удаления */
+.picker-modal-card {
+  width: min(430px, 92vw);
+  background: var(--panel-inner);
+  color: var(--text-title);
+  border-radius: var(--radius-main);
+  padding: 24px;
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-radius 0.25s ease;
+}
+
+.picker-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.picker-presets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 210px;
+  overflow-y: auto;
+}
+
+.picker-preset-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--gemini-pill-bg);
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.picker-preset-row:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.create-preset-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.create-preset-form .oval-input {
+  flex: 1;
+}
+
+.confirm-text {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-card {
+  background: var(--panel-inner);
+  padding: 18px 22px;
+  border-radius: calc(var(--radius-main) - 8px);
+  transition: border-radius 0.25s ease;
+}
+
+.faq-card h3 {
+  margin-bottom: 6px;
+  font-size: 16.5px;
+}
+
+.version-watermark {
+  position: fixed;
+  bottom: 14px;
+  right: 22px;
+  font-size: 13px;
+  color: rgba(100, 105, 120, 0.45);
+  pointer-events: none;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: #1f1f1f;
+  color: #fff;
+  padding: 11px 24px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 300;
+  opacity: 0;
+  transition: 0.3s ease;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+#print-area {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #print-area,
+  #print-area * {
+    visibility: visible;
+  }
+  #print-area {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 24px;
+    background: #fff;
+    color: #000;
+  }
+}
+
+@media (max-width: 860px) {
+  .cards-grid,
+  .presets-grid,
+  .presets-grid.compact-mode,
+  .preset-drugs-list.grid-2,
+  .settings-shell {
+    grid-template-columns: 1fr;
+  }
+  .settings-outer-wrap,
+  .detail-modal-wrapper {
+    flex-direction: column;
+  }
+}

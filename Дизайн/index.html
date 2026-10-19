@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Фармацевтический справочник</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Фоновая анимация летающих шариков -->
+  <canvas id="bgParticles"></canvas>
+
+  <!-- Полноширинное верхнее меню при наведении на кнопку слева -->
+  <div class="top-nav-zone" id="topNavZone">
+    <button class="menu-trigger-btn" id="menuTriggerBtn" onclick="toggleMenuClick()" aria-label="Меню">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <header class="top-hover-menu" id="topHoverMenu">
+      <nav class="top-nav-links">
+        <button class="nav-link" data-page="home" onclick="switchPage('home')" data-i18n="nav_home">Главная</button>
+        <button class="nav-link" data-page="settings" onclick="switchPage('settings')" data-i18n="nav_settings">Настройки</button>
+        <button class="nav-link" data-page="presets" onclick="switchPage('presets')" data-i18n="nav_presets">Пресеты</button>
+        <button class="nav-link" data-page="faq" onclick="switchPage('faq')" data-i18n="nav_faq">FAQ</button>
+      </nav>
+      <div class="top-menu-status" data-i18n="top_status">Реестр Минздрава РФ</div>
+    </header>
+  </div>
+
+  <!-- Основной контейнер интерфейса -->
+  <div id="app-wrapper">
+
+    <!-- СТРАНИЦА 1: ГЛАВНАЯ И ПОИСК СТРОГО ПО БОЛЕЗНЯМ -->
+    <main id="page-home" class="page-section active">
+      <section class="hero-search-section" id="heroSection">
+        <div class="hero-kicker" data-i18n="hero_kicker">
+          КЛИНИЧЕСКИЙ СПРАВОЧНИК ТЕРАПЕВТА
+        </div>
+
+        <h1 class="app-title" onclick="resetToHero()" data-i18n="app_title">
+          ФАРМАЦЕВТИЧЕСКИЙ СПРАВОЧНИК
+        </h1>
+
+        <p class="hero-subtitle" data-i18n="hero_subtitle">
+          Введите заболевание для подбора терапии
+        </p>
+
+        <div class="search-wrapper" id="searchWrapper">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Введите болезнь (например: Изжога, Грипп, Гипертония)..."
+              data-i18n-placeholder="search_placeholder"
+              autocomplete="off"
+            />
+            <button class="filter-btn" id="filterBtn" type="button" data-i18n="filter_btn">Фильтр</button>
+          </div>
+
+          <!-- Прямоугольник совпадений по болезням при вводе текста -->
+          <div class="disease-suggestions-box" id="diseaseSuggestionsBox"></div>
+
+          <!-- Компактный выпадающий фильтр по группам заболеваний -->
+          <div class="filter-dropdown" id="filterDropdown"></div>
+        </div>
+
+        <div class="search-divider"></div>
+      </section>
+
+      <!-- Блок результатов поиска лекарств по выбранной болезни -->
+      <section class="results-container" id="resultsContainer">
+        <div class="results-header">
+          <div class="results-header-left">
+            <span class="results-title" id="resultsLabel">Лекарства по заболеванию:</span>
+            <button class="oval-subtle-btn" id="resetAnalogBtn" style="display:none;" onclick="clearAnalogFilter()">
+              Сбросить фильтр аналогов
+            </button>
+          </div>
+
+          <div class="results-header-right">
+            <!-- Компактная иконка выбора вида с всплывающим окошком при наведении -->
+            <div class="view-hover-Menu">
+              <button class="view-icon-trigger" id="catalogViewIcon" title="Вид отображения">⊞</button>
+              <div class="view-popup-box">
+                <button class="view-popup-opt active" id="grid3Btn" onclick="setCatalogView('grid', '⊞')">
+                  <span>⊞</span> 3 в строку
+                </button>
+                <button class="view-popup-opt" id="grid1Btn" onclick="setCatalogView('list', '☰')">
+                  <span>☰</span> 1 в строку
+                </button>
+              </div>
+            </div>
+
+            <!-- Крестик закрытия результатов поиска -->
+            <button class="circle-close-btn" onclick="resetToHero()" title="Закрыть каталог">&times;</button>
+          </div>
+        </div>
+
+        <div class="cards-grid" id="cardsGrid"></div>
+      </section>
+    </main>
+
+    <!-- СТРАНИЦА 2: НАСТРОЙКИ (По центру + окошко "НАСТРОЙКИ" слева + крестик) -->
+    <section id="page-settings" class="page-section centered-page">
+      <div class="settings-outer-wrap">
+        <!-- Отдельное боковое окошко "НАСТРОЙКИ" у левого края -->
+        <div class="settings-side-badge" data-i18n="settings_badge">НАСТРОЙКИ</div>
+
+        <div class="settings-shell">
+          <button class="window-corner-close" onclick="switchPage('home')" title="Выйти на главную">&times;</button>
+
+          <aside class="settings-sidebar">
+            <button class="settings-cat-btn active" data-tab="appearance" onclick="switchSettingsTab('appearance')" data-i18n="set_cat_theme">Палитра и тема</button>
+            <button class="settings-cat-btn" data-tab="interface" onclick="switchSettingsTab('interface')" data-i18n="set_cat_ui">Интерфейс и фон</button>
+            <button class="settings-cat-btn" data-tab="language" onclick="switchSettingsTab('language')" data-i18n="set_cat_lang">Язык</button>
+            <button class="settings-cat-btn" data-tab="catalog" onclick="switchSettingsTab('catalog')" data-i18n="set_cat_catalog">Каталог и поиск</button>
+            <button class="settings-cat-btn" data-tab="printing" onclick="switchSettingsTab('printing')" data-i18n="set_cat_print">Печать</button>
+          </aside>
+
+          <div class="settings-content">
+            <!-- Вкладка 1: Палитра и тема -->
+            <div class="settings-pane active" id="tab-appearance">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_display_mode">Режим темы</span>
+                <div class="theme-pills">
+                  <button class="theme-pill active-mode" onclick="setDisplayMode('light', this)" data-i18n="mode_light">Светлая</button>
+                  <button class="theme-pill" onclick="setDisplayMode('dark', this)" data-i18n="mode_dark">Темная</button>
+                  <button class="theme-pill" onclick="setDisplayMode('a11y', this)" data-i18n="mode_a11y">Для слабовидящих</button>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_preset_theme">Оттенок оформления</span>
+                <div class="theme-pills">
+                  <button class="theme-pill active-theme" onclick="applyPresetTheme('gemini', this)" data-i18n="theme_classic">Gemini</button>
+                  <button class="theme-pill" onclick="applyPresetTheme('medical', this)" data-i18n="theme_medical">Синяя</button>
+                  <button class="theme-pill" onclick="applyPresetTheme('emerald', this)" data-i18n="theme_emerald">Шалфей</button>
+                  <button class="theme-pill" onclick="applyPresetTheme('warm', this)" data-i18n="theme_warm">Кварц</button>
+                  <button class="theme-pill" onclick="applyPresetTheme('graphite', this)" data-i18n="theme_graphite">Графит</button>
+                </div>
+              </div>
+
+              <div class="setting-row wheel-row">
+                <span class="setting-label" data-i18n="set_custom_wheel">Пользовательский спектр RGB</span>
+                <div class="wheel-box">
+                  <canvas id="rgbWheel" width="180" height="180"></canvas>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_contrast">Насыщенность карточек</span>
+                <input type="range" min="20" max="54" value="32" class="modern-range" oninput="updateCardContrast(this.value)" />
+              </div>
+            </div>
+
+            <!-- Вкладка 2: Интерфейс и фон -->
+            <div class="settings-pane" id="tab-interface">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_particles">Летающие шарики на фоне</span>
+                <label class="switch">
+                  <input type="checkbox" id="toggleParticles" checked onchange="toggleBackgroundParticles(this.checked)" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_particles_count">Количество шариков на фоне</span>
+                <input type="range" min="6" max="45" value="24" class="modern-range" oninput="updateParticlesCount(this.value)" />
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_radius">Скругление элементов</span>
+                <select class="modern-select" onchange="updateRoundness(this.value)">
+                  <option value="20px">Умеренное</option>
+                  <option value="28px" selected>Округлое</option>
+                  <option value="38px">Максимальное</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_glare">Блики на карточках препаратов</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="toggleGlareSetting(this.checked)" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_blur">Размытие заднего фона окон</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="appConfig.blur = this.checked" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_font_scale">Масштаб шрифта</span>
+                <input type="range" min="90" max="120" value="100" class="modern-range" oninput="document.documentElement.style.fontSize = this.value + '%'" />
+              </div>
+            </div>
+
+            <!-- Вкладка 3: Язык -->
+            <div class="settings-pane" id="tab-language">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_ui_lang">Язык интерфейса</span>
+                <div class="theme-pills">
+                  <button class="theme-pill active-lang" data-lang="ru" onclick="setLanguage('ru')">Русский</button>
+                  <button class="theme-pill" data-lang="en" onclick="setLanguage('en')">English</button>
+                  <button class="theme-pill" data-lang="de" onclick="setLanguage('de')">Deutsch</button>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_latin_inn">Показывать действующее вещество</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="appConfig.showInn = this.checked; renderCards();" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Вкладка 4: Каталог и поиск -->
+            <div class="settings-pane" id="tab-catalog">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_default_grid">Отображение карточек</span>
+                <select class="modern-select" onchange="setCatalogView(this.value, this.value === 'grid' ? '⊞' : '☰')">
+                  <option value="grid">3 в строку</option>
+                  <option value="list">1 в строку</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_sort">Сортировка списка</span>
+                <select class="modern-select" id="sortSelect" onchange="renderCards()">
+                  <option value="id">По реестру Минздрава</option>
+                  <option value="alpha">По алфавиту</option>
+                  <option value="category">По заболеванию</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Вкладка 5: Печать -->
+            <div class="settings-pane" id="tab-printing">
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_paper">Формат листа</span>
+                <select class="modern-select" onchange="appConfig.paperSize = this.value">
+                  <option value="A4">A4</option>
+                  <option value="A5">A5</option>
+                </select>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_rx_prefix">Индексы Rp. / S.</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="appConfig.useRxPrefix = this.checked" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <span class="setting-label" data-i18n="set_print_border">Печатать рамку бланка</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="appConfig.printBorder = this.checked" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- СТРАНИЦА 3: ПРЕСЕТЫ -->
+    <section id="page-presets" class="page-section centered-page">
+      <div class="presets-shell">
+
+        <!-- Главный экран пресетов -->
+        <div id="presetsOverview">
+          <div class="presets-top-bar">
+            <h2 class="section-heading" data-i18n="nav_presets">Пресеты</h2>
+
+            <div class="presets-controls-right">
+              <button class="elongated-oval-btn accent-fill" onclick="openCreatePresetModal()" data-i18n="btn_create_preset">
+                Добавить пресет
+              </button>
+
+              <!-- Иконка выбора вида отображения пресетов при наведении -->
+              <div class="view-hover-Menu">
+                <button class="view-icon-trigger" id="presetsViewIcon" title="Вид отображения">⊞</button>
+                <div class="view-popup-box">
+                  <button class="view-popup-opt active" id="presetViewGridBtn" onclick="setPresetsViewMode('grid', '⊞')">
+                    <span>⊞</span> Плитка
+                  </button>
+                  <button class="view-popup-opt" id="presetViewListBtn" onclick="setPresetsViewMode('list', '☰')">
+                    <span>☰</span> Список
+                  </button>
+                  <button class="view-popup-opt" id="presetViewCompactBtn" onclick="setPresetsViewMode('compact', '▤')">
+                    <span>▤</span> Компактно
+                  </button>
+                </div>
+              </div>
+
+              <button class="circle-close-btn" onclick="switchPage('home')" title="Выйти на главную">&times;</button>
+            </div>
+          </div>
+
+          <div id="presetsGridContainer" class="presets-grid"></div>
+        </div>
+
+        <!-- Внутри открытого пресета -->
+        <div id="presetDetailView" style="display:none;">
+          <div class="presets-top-bar">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <!-- Крестик вместо кнопки "Назад" -->
+              <button class="circle-close-btn" onclick="closePresetDetail()" title="Закрыть пресет">&times;</button>
+              <h2 class="section-heading" id="openedPresetTitle">Пресет</h2>
+            </div>
+
+            <div class="presets-controls-right">
+              <!-- Иконка выбора вида внутри пресета при наведении -->
+              <div class="view-hover-Menu">
+                <button class="view-icon-trigger" id="innerPresetViewIcon" title="Вид отображения">☰</button>
+                <div class="view-popup-box">
+                  <button class="view-popup-opt active" id="innerView1Btn" onclick="setInnerPresetView('list', '☰')">
+                    <span>☰</span> 1 в строку
+                  </button>
+                  <button class="view-popup-opt" id="innerView2Btn" onclick="setInnerPresetView('grid', '⊞')">
+                    <span>⊞</span> 2 в строку
+                  </button>
+                </div>
+              </div>
+
+              <button class="elongated-oval-btn accent-fill" onclick="printActivePreset()" data-i18n="btn_print">
+                Печать рецепта
+              </button>
+            </div>
+          </div>
+
+          <div id="presetDrugsContainer" class="preset-drugs-list"></div>
+
+          <!-- Нижняя панель внутри пресета с красной кнопкой УДАЛИТЬ справа -->
+          <div class="preset-bottom-bar">
+            <button class="danger-oval-btn" onclick="askDeletePreset(openedPresetId)">
+              Удалить
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- СТРАНИЦА 4: FAQ -->
+    <section id="page-faq" class="page-section centered-page">
+      <div class="faq-shell" style="position:relative;">
+        <button class="window-corner-close" onclick="switchPage('home')" title="Выйти на главную">&times;</button>
+        <h2 class="section-heading" style="margin-bottom: 22px;">FAQ</h2>
+        <div class="faq-list">
+          <div class="faq-card">
+            <h3>Поиск лекарств по заболеванию</h3>
+            <p>Начните вводить название болезни в строку поиска (например: «И» — Изжога, «Г» — Гастрит, Гипертония, Грипп). В появившемся ниже прямоугольнике нажмите на нужное заболевание, чтобы вывести все препараты для его лечения.</p>
+          </div>
+          <div class="faq-card">
+            <h3>Подбор аналогов</h3>
+            <p>Откройте карточку препарата и нажмите «Найти аналоги» — ниже основного окна появится отдельный овал со списком прямых аналогов по действующему веществу и группе.</p>
+          </div>
+          <div class="faq-card">
+            <h3>Пресеты, удаление и печать</h3>
+            <p>Добавляйте препараты в пресеты, настраивайте дозировки и выводите рецепт на печать. Удалить любой пресет можно красной кнопкой «Удалить» внутри пресета с подтверждением действия.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="version-watermark">#Версия 0.42 Release</div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ПОЛНАЯ КАРТОЧКА ПРЕПАРАТА + ОТДЕЛЬНЫЙ ОВАЛ АНАЛОГОВ НИЖЕ ОКНА -->
+  <div class="modal-overlay" id="detailModal" onclick="handleBackdropClose(event, 'detailModal')">
+    <div class="detail-modal-stack">
+      <div class="detail-modal-wrapper">
+        <!-- Просто крестик вместо слова "ЗАКРЫТЬ" -->
+        <button class="modal-close-top" onclick="closeModal('detailModal')" title="Закрыть">&times;</button>
+
+        <div class="detail-left-panel">
+          <div class="detail-white-box" id="modalDescriptionBox"></div>
+        </div>
+
+        <div class="detail-right-panel">
+          <div class="detail-photo-frame" id="modalPhotoBox"></div>
+          <div class="detail-right-actions" id="modalActionBox"></div>
+        </div>
+      </div>
+
+      <!-- Отдельный овал аналогов НИЖЕ основного окна карточки -->
+      <div class="analogs-external-oval" id="modalAnalogsDrawer" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО: ВЫБОР ИЛИ СОЗДАНИЕ ПРЕСЕТА -->
+  <div class="modal-overlay" id="presetPickerModal" onclick="handleBackdropClose(event, 'presetPickerModal')">
+    <div class="picker-modal-card">
+      <div class="picker-modal-header">
+        <h3 id="pickerModalTitle" data-i18n="modal_select_preset">Выбор пресета</h3>
+        <button class="circle-close-btn" onclick="closeModal('presetPickerModal')">&times;</button>
+      </div>
+
+      <div id="existingPresetsList" class="picker-presets-list"></div>
+
+      <div class="create-preset-zone">
+        <button class="elongated-oval-btn full-width" id="showCreateInputBtn" onclick="toggleCreatePresetInput(true)" data-i18n="btn_create_preset">
+          Добавить пресет
+        </button>
+
+        <div id="createPresetForm" class="create-preset-form" style="display:none;">
+          <input
+            type="text"
+            id="newPresetNameInput"
+            class="oval-input"
+            placeholder="Название пресета..."
+            autocomplete="off"
+          />
+          <button class="elongated-oval-btn accent-fill" onclick="confirmCreatePreset()" data-i18n="btn_save">
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ: "Вы уверены, что хотите удалить пресет?" -->
+  <div class="modal-overlay" id="confirmDeleteModal" onclick="handleBackdropClose(event, 'confirmDeleteModal')">
+    <div class="picker-modal-card confirm-card">
+      <div class="picker-modal-header">
+        <h3>Удаление пресета</h3>
+        <button class="circle-close-btn" onclick="closeModal('confirmDeleteModal')">&times;</button>
+      </div>
+      <p class="confirm-text">Вы уверены, что хотите удалить пресет?</p>
+      <div class="confirm-actions">
+        <button class="oval-subtle-btn" onclick="closeModal('confirmDeleteModal')">Отмена</button>
+        <button class="danger-oval-btn" onclick="confirmDeletePresetAction()">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div id="print-area"></div>
+
+  <script src="database.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
